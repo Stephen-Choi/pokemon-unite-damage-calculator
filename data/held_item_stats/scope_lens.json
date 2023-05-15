@@ -1,0 +1,8 @@
+{
+  "Critial-Hit Rate": "6%",
+  "Critial-Hit Damage": "12%",
+  "Special Effect": {
+    "Additional Damage": "75% attack when dealing a critial hit with a basic attack",
+    "Cooldown": 1
+  }
+}
