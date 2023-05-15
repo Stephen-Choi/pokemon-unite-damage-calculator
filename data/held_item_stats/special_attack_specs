@@ -1,0 +1,9 @@
+{
+  "Special Attack": 24,
+  "Special Effect": {
+    "Stack Increase": {
+      "Amount": 16,
+      "Stat": "Special Attack"
+    }
+  }
+}

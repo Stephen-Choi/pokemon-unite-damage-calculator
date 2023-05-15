@@ -1,0 +1,8 @@
+{
+  "Attack": 15,
+  "Critial-Hit Rate": "2.1%",
+  "Special Effect": {
+    "Additional Damage": "20 + 50% attack after using a move",
+    "Duration": 3
+  }
+}
