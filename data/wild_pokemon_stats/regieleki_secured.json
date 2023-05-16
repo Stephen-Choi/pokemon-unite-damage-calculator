@@ -1,0 +1,79 @@
+[
+  {
+    "time_remaining": 420,
+    "health": 14940,
+    "attack": 592,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 400,
+    "health": 16180,
+    "attack": 624,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 370,
+    "health": 17420,
+    "attack": 656,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 340,
+    "health": 18660,
+    "attack": 688,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 310,
+    "health": 19900,
+    "attack": 720,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 280,
+    "health": 21140,
+    "attack": 752,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 250,
+    "health": 22380,
+    "attack": 784,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 220,
+    "health": 23620,
+    "attack": 816,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 190,
+    "health": 24860,
+    "attack": 848,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 160,
+    "health": 26100,
+    "attack": 880,
+    "defense": 250,
+    "sp. def": 250
+  },
+  {
+    "time_remaining": 130,
+    "health": 27340,
+    "attack": 912,
+    "defense": 250,
+    "sp. def": 250
+  }
+]
