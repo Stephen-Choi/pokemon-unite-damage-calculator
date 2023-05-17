@@ -16,3 +16,11 @@ type StatusConditions string
 const (
 	burned StatusConditions = "burned"
 )
+
+// CoolDowns is a struct containing the cooldowns of a pokemon's attacks
+type CoolDowns struct {
+	move1CoolDown       float64
+	move2CoolDown       float64
+	uniteMoveCoolDown   float64
+	basicAttackCoolDown float64
+}

@@ -120,27 +120,8 @@ func IsPokemonPlayable(pokemonName string) bool {
 	return false
 }
 
+// Pokemon is an interface for all pokemon
 type Pokemon interface {
 	GetAvailableAttacks() (availableAttacks []AttackOption, err error)                                   // Get the available attacks for a pokemon that are not on cooldown
 	Attack(attack AttackOption) (damageDealt int, additionalStatusEffects []StatusConditions, err error) // Get the damage dealt by a pokemon's attack and possible status effects
-}
-
-type Stats struct {
-	level             int     `json:"level"`
-	hp                int     `json:"hp"`
-	attack            int     `json:"attack"`
-	defense           int     `json:"def"`
-	specialAttack     int     `json:"sp. attack"`
-	specialDefense    int     `json:"sp. def"`
-	attackSpeed       float64 `json:"atk spd"`
-	criticalHitChance float64 `json:"crit chance"`
-	criticalHitDamage float64 `json:"-"`
-	cooldownReduction float64 `json:"CDR"`
-}
-
-type CoolDowns struct {
-	move1CoolDown       float64
-	move2CoolDown       float64
-	uniteMoveCoolDown   float64
-	basicAttackCoolDown float64
 }
