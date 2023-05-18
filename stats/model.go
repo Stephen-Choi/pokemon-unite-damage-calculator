@@ -1,15 +1,23 @@
-package pokemon
+package stats
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"strconv"
 )
 
+// StatName is the name of a pokemon stat
+type StatName string
+
 const (
-	pokemonStatsDirectory = "data/pokemon_stats"
+	hpStat                StatName = "hp"
+	attackStat            StatName = "attack"
+	defenseStat           StatName = "defense"
+	specialAttackStat     StatName = "specialAttack"
+	specialDefenseStat    StatName = "specialDefense"
+	attackSpeedStat       StatName = "attackSpeed"
+	criticalHitChanceStat StatName = "criticalHitChance"
+	criticalHitDamageStat StatName = "criticalHitDamage"
+	cooldownReductionStat StatName = "cooldownReduction"
 )
 
 // JsonStats is a temporary struct used to unmarshal the pokemon json stats
@@ -22,36 +30,27 @@ type JsonStats struct {
 	SpecialDefense    string `json:"sp. def"`
 	AttackSpeed       string `json:"atk spd"`
 	CriticalHitChance string `json:"crit chance"`
+	CritialHitDamage  string `json:"crit dmg"`
 	CooldownReduction string `json:"CDR"`
+	EnergyRate        string `json:"energy rate"`
 }
 
-// fetchPokemonStats fetches the stats of a pokemon at a given level
-func fetchPokemonStats(pokemonName string, level int) (stats Stats, err error) {
-	pokemonFileName := pokemonName + "_stats.json"
-
-	// Read file
-	pokemonFilePath := filepath.Join(pokemonStatsDirectory, pokemonFileName)
-	data, err := ioutil.ReadFile(pokemonFilePath)
-	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
-	}
-
-	// Unmarshal the JSON data into a slice of Pokemon JsonStats
-	var pokemonJsonStats []JsonStats
-	err = json.Unmarshal(data, &pokemonJsonStats)
-	if err != nil {
-		fmt.Println("Error unmarshaling JSON:", err)
-		return
-	}
-
-	// Convert the json stats for the specified level to internal use struct (with better typing)
-	index := level - 1 // level 1 is at index 0
-	return toTypedStats(pokemonJsonStats[index])
+// Stats is a struct containing the stats of a pokemon
+type Stats struct {
+	Level             int     `json:"level"`
+	Hp                int     `json:"hp"`
+	Attack            int     `json:"attack"`
+	Defense           int     `json:"def"`
+	SpecialAttack     int     `json:"sp. attack"`
+	SpecialDefense    int     `json:"sp. def"`
+	AttackSpeed       float64 `json:"atk spd"`
+	CriticalHitChance float64 `json:"crit chance"`
+	CriticalHitDamage float64 `json:"-"` // Critical attack is default base 200% for all pokemon
+	CooldownReduction float64 `json:"CDR"`
 }
 
-// toTypedStats converts the JsonStats struct to the internal use typed Stats struct
-func toTypedStats(jsonStats JsonStats) (Stats, error) {
+// ToTypedStats converts the JsonStats struct to the internal use typed Stats struct
+func ToTypedStats(jsonStats JsonStats) (Stats, error) {
 	level, err := strconv.Atoi(jsonStats.Level)
 	if err != nil {
 		fmt.Println("Error parsing level:", err)
@@ -99,16 +98,16 @@ func toTypedStats(jsonStats JsonStats) (Stats, error) {
 	}
 
 	return Stats{
-		level:             level,
-		hp:                hp,
-		attack:            attack,
-		defense:           defense,
-		specialAttack:     specialAttack,
-		specialDefense:    specialDefense,
-		attackSpeed:       attackSpeed,
-		criticalHitChance: criticalHitChance,
-		criticalHitDamage: 2.0,
-		cooldownReduction: cooldownReduction,
+		Level:             level,
+		Hp:                hp,
+		Attack:            attack,
+		Defense:           defense,
+		SpecialAttack:     specialAttack,
+		SpecialDefense:    specialDefense,
+		AttackSpeed:       attackSpeed,
+		CriticalHitChance: criticalHitChance,
+		CriticalHitDamage: 2.0,
+		CooldownReduction: cooldownReduction,
 	}, nil
 }
 
@@ -124,3 +123,16 @@ func convertPercentToFloat(percentString string) (float64, error) {
 	decimalValue := percentValue / 100.0
 	return decimalValue, nil
 }
+
+// BuffName is the name of the origin of the stat buff applied on a pokemon
+type BuffName string
+
+const (
+	move1Buff       BuffName = "move1Buff"
+	move2Buff       BuffName = "move2Buff"
+	uniteMoveBuff   BuffName = "uniteMoveBuff"
+	basicAttackBuff BuffName = "basicAttackBuff"
+)
+
+// Buffs is a map of buffs applied on a pokemon
+type Buffs map[BuffName]map[StatName]float64

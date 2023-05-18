@@ -1,4 +1,4 @@
 {
-  "Defense": 30,
-  "Special Defense": 30
+  "defense": 30,
+  "sp. def": 30
 }

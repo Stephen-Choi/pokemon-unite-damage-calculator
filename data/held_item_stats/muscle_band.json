@@ -1,8 +1,8 @@
 {
-  "Attack": 15,
-  "Attack Speed": "7.5%",
-  "Special Effect": {
-    "Additional Damage": "3% of target's remaining HP, capped at 360",
-    "Internal Cooldown": 0.35
+  "attack": 15,
+  "atk speed": "7.5%",
+  "special effect": {
+    "additional damage": "3% of target's remaining HP, capped at 360",
+    "internal cooldown": 0.35
   }
 }

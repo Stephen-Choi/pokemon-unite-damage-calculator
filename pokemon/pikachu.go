@@ -2,18 +2,24 @@ package pokemon
 
 import (
 	"fmt"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/items"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
+	battleitems "github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/battle_items"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
+	stats2 "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
 // Pikachu is a pokemon
 type Pikachu struct {
-	Stats
-	CoolDowns
-	Buffs
+	stats2.Stats
+	attack.CoolDowns
+	stats2.Buffs
+	HeldItems  // TODO once struct is complete
+	BattleItem // TODO once struct is complete
 }
 
-func NewPikachu(level int, heldItems []items.HeldItemName, battleItem items.BattleItemName) (p *Pikachu, err error) {
-	stats, err := fetchPokemonStats(pikachuName, level)
+func NewPikachu(level int, heldItems []helditems.Name, battleItem battleitems.Name) (p *Pikachu, err error) {
+	stats, err := stats2.fetchPokemonStats(pikachuName, level)
+	p.Stats = stats
 
 	fmt.Println(stats)
 	fmt.Println(heldItems)
@@ -22,10 +28,10 @@ func NewPikachu(level int, heldItems []items.HeldItemName, battleItem items.Batt
 	return
 }
 
-func (p *Pikachu) GetAvailableAttacks() (availableAttacks []AttackOption, err error) {
+func (p *Pikachu) GetAvailableAttacks() (availableAttacks []attack.AttackOption, err error) {
 	return
 }
 
-func (p *Pikachu) Attack(attack AttackOption) (availableAttacks []AttackOption, err error) {
+func (p *Pikachu) Attack(attack attack.AttackOption) (availableAttacks []attack.AttackOption, err error) {
 	return
 }

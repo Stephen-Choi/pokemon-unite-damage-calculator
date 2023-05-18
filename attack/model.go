@@ -1,4 +1,4 @@
-package pokemon
+package attack
 
 // AttackOption is an enum for the different types of attacks a pokemon can do
 type AttackOption string

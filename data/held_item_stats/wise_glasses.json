@@ -1,8 +1,8 @@
 {
-  "Special Attack": 39,
-  "Special Effect": {
-    "Stat Increase": {
-      "Special Attack": "7%"
+  "sp. attack": 39,
+  "special effect": {
+    "flat stat increase": {
+      "sp. attack": "7%"
     }
   }
 }

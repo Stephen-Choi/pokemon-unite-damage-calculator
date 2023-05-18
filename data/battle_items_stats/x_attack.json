@@ -1,10 +1,10 @@
 {
-  "Cooldown": 40,
-  "Special Effect": {
-    "Stat Increase": {
-      "Attack Speed": "25%",
-      "Attack": "20%",
-      "Special Attack": "20%"
+  "cooldown": 40,
+  "special effect": {
+    "stat increase": {
+      "atk speed": "25%",
+      "attack": "20%",
+      "sp. attack": "20%"
     }
   }
 }

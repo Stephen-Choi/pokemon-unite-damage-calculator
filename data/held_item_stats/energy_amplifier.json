@@ -1,8 +1,8 @@
 {
-  "Energy Rate": "6%",
-  "Cooldown Reduction": "4.5%",
-  "Special Effect": {
-    "Additional Damage": "21%",
-    "Duration": 4
+  "energy rate": "6%",
+  "CDR": "4.5%",
+  "special effect": {
+    "additional damage": "21%",
+    "duration": 4
   }
 }

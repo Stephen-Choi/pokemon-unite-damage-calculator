@@ -1,8 +1,8 @@
 {
-  "Sp. Attack": 39,
-  "Special Effect": {
-    "Additional Damage": "40%",
-    "Additional Note": "1 time trigger",
-    "Cooldown": 8
+  "sp. attack": 39,
+  "special effect": {
+    "additional damage": "40%",
+    "additional note": "1 time trigger",
+    "cooldown": 8
   }
 }

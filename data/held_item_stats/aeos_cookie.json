@@ -1,9 +1,9 @@
 {
-  "HP": 240,
-  "Special Effect": {
-    "Stack Increase": {
-      "Amount": 200,
-      "Stat": "HP"
+  "hp": 240,
+  "special sffect": {
+    "stack increase": {
+      "amount": 200,
+      "stat": "hp"
     }
   }
 }

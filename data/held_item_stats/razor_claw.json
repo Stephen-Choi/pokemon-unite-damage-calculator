@@ -1,8 +1,8 @@
 {
-  "Attack": 15,
-  "Critial-Hit Rate": "2.1%",
-  "Special Effect": {
-    "Additional Damage": "20 + 50% attack after using a move",
-    "Duration": 3
+  "attack": 15,
+  "crit chance": "2.1%",
+  "special effect": {
+    "additional damage": "20 + 50% attack after using a move",
+    "duration": 3
   }
 }
