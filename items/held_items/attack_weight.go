@@ -14,7 +14,5 @@ func NewAttackWeight(stacks int) *AttackWeight {
 }
 
 func (a *AttackWeight) GetStatBoosts() stats.Stats {
-	return stats.Stats{
-		Attack: ,
-	}
+	return stats.Stats{}
 }

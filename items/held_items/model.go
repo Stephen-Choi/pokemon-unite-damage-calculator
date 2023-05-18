@@ -6,30 +6,30 @@ import (
 )
 
 const (
-	AeosCookieName         = "aeosCookie"
-	BuddyBarrierName       = "buddyBarrier"
-	EnergyAmplifierName    = "energyAmplifier"
-	FocusBandName          = "focusBand"
-	RapidFireScarfName     = "rapidFireScarf"
-	RockyHelmetName        = "rockyHelmet"
-	ScoreShieldName        = "scoreShield"
-	SpecialAttackSpecsName = "specialAttackSpecs"
-	AssaultVestName        = "assaultVest"
-	ChoiceSpecsName        = "choiceSpecs"
-	ExpShareName           = "expShare"
+	AeosCookieName         = "aeos_cookie"
+	BuddyBarrierName       = "buddy_barrier"
+	EnergyAmplifierName    = "energy_amplifier"
+	FocusBandName          = "focus_band"
+	RapidFireScarfName     = "rapid_fire_scarf"
+	RockyHelmetName        = "rocky_helmet"
+	ScoreShieldName        = "score_shield"
+	SpecialAttackSpecsName = "special_attack_specs"
+	AssaultVestName        = "assault_vest"
+	ChoiceSpecsName        = "choice_specs"
+	ExpShareName           = "exp_share"
 	LeftoversName          = "leftovers"
-	RazorClawName          = "razorClaw"
-	RustedSwordName        = "rustedSword"
-	ShellBellName          = "shellBell"
-	WeaknessPolicyName     = "weaknessPolicy"
-	AttackWeightName       = "attackWeight"
-	DrainCrownName         = "drainCrown"
-	FloatStoneName         = "floatStone"
-	MuscleBandName         = "muscleBand"
-	RescueHoodName         = "rescueHood"
-	ScopeLensName          = "scopeLens"
-	SlickSpoonName         = "slickSpoon"
-	WiseGlassesName        = "wiseGlasses"
+	RazorClawName          = "razor_claw"
+	RustedSwordName        = "rusted_sword"
+	ShellBellName          = "shell_bell"
+	WeaknessPolicyName     = "weakness_policy"
+	AttackWeightName       = "attack_weight"
+	DrainCrownName         = "drain_crown"
+	FloatStoneName         = "float_stone"
+	MuscleBandName         = "muscle_band"
+	RescueHoodName         = "rescue_hood"
+	ScopeLensName          = "scope_lens"
+	SlickSpoonName         = "slick_spoon"
+	WiseGlassesName        = "wise_glasses"
 )
 
 var playableHeldItems = []string{
@@ -81,10 +81,10 @@ type HeldItem interface {
 
 // HeldItemSpecialEffect contains details about a special effect that a held item provides
 type HeldItemSpecialEffect struct {
-	Stack            StackEffect            `json:"stack increase"`
-	AdditionalDamage AdditionalDamageEffect `json:"additional damage"`
-	FlatStatIncrease FlatStatIncrease       `json:"flat stat increase"`
-	Buff             Buff                   `json:"buff"`
+	Stack            *StackEffect            `json:"stack increase,omitempty"`
+	AdditionalDamage *AdditionalDamageEffect `json:"additional damage,omitempty"`
+	FlatStatIncrease *FlatStatIncrease       `json:"flat stat increase,omitempty"`
+	Buff             *Buff                   `json:"buff,omitempty"`
 }
 
 type StackEffect struct {
@@ -93,8 +93,7 @@ type StackEffect struct {
 }
 
 type AdditionalDamageEffect struct {
-	AdditionalDamage string  `json:"additional damage"` // Note: couldn't easily generalize, so will need to handle each damage effect separately
-	AdditionalNote   string  `json:"additional note"`
+	Damage           string  `json:"damage"` // Note: couldn't easily generalize, so will need to handle each damage effect separately
 	Cooldown         float64 `json:"cooldown"`
 	InternalCooldown float64 `json:"internal cooldown"`
 	Duration         float64 `json:"duration"`
@@ -113,6 +112,6 @@ type Buff struct {
 
 // HeldItemData contains details about a held item
 type HeldItemData struct {
-	Stats         stats.JsonStats
+	stats.Stats
 	SpecialEffect HeldItemSpecialEffect `json:"special effect"`
 }

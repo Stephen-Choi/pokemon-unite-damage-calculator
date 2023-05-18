@@ -1,8 +1,0 @@
-{
-  "attack": 15,
-  "crit chance": "2.1%",
-  "special effect": {
-    "additional damage": "20 + 50% attack after using a move",
-    "duration": 3
-  }
-}

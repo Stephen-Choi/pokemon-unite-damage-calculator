@@ -1,4 +1,4 @@
-package fetchdata
+package pokemon
 
 import (
 	"encoding/json"
@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	pokemonStatsDirectory = "pokemon_stats"
+	pokemonStatsDirectory = "/Users/stephenchoi/Desktop/Projects/pokemon-unite-damage-calculator/data/pokemon_stats"
 )
 
-// fetchPokemonStats fetches the stats of a pokemon at a given level
-func fetchPokemonStats(pokemonName string, level int) (stats stats.Stats, err error) {
+// FetchPokemonStats fetches the stats of a pokemon at a given level
+func FetchPokemonStats(pokemonName string, level int) (pokemonStats stats.Stats, err error) {
 	pokemonFileName := pokemonName + "_stats.json"
 
 	// Read file

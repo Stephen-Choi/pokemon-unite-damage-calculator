@@ -30,9 +30,8 @@ type JsonStats struct {
 	SpecialDefense    string `json:"sp. def"`
 	AttackSpeed       string `json:"atk spd"`
 	CriticalHitChance string `json:"crit chance"`
-	CritialHitDamage  string `json:"crit dmg"`
+	CriticalHitDamage string `json:"crit dmg"`
 	CooldownReduction string `json:"CDR"`
-	EnergyRate        string `json:"energy rate"`
 }
 
 // Stats is a struct containing the stats of a pokemon
@@ -45,8 +44,9 @@ type Stats struct {
 	SpecialDefense    int     `json:"sp. def"`
 	AttackSpeed       float64 `json:"atk spd"`
 	CriticalHitChance float64 `json:"crit chance"`
-	CriticalHitDamage float64 `json:"-"` // Critical attack is default base 200% for all pokemon
+	CriticalHitDamage float64 `json:"crit dmg"` // Critical attack is default base 200% for all pokemon
 	CooldownReduction float64 `json:"CDR"`
+	EnergyRate        float64 `json:"energy rate"`
 }
 
 // ToTypedStats converts the JsonStats struct to the internal use typed Stats struct

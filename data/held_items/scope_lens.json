@@ -1,0 +1,10 @@
+{
+  "crit chance": 0.06,
+  "crit dmg": 0.12,
+  "special effect": {
+    "additional damage": {
+      "damage": "75% attack when dealing a critial hit with a basic attack",
+      "cooldown": 1
+    }
+  }
+}

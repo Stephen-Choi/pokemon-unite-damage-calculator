@@ -2,6 +2,8 @@ package pokemon
 
 import "github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 
+const maxLevel = 15
+
 const (
 	absolName           = "absol"
 	chandelureName      = "chandelure"

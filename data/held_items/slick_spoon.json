@@ -1,0 +1,9 @@
+{
+  "hp": 210,
+  "sp. attack": 30,
+  "special effect": {
+    "additional damage": {
+      "damage": "Ignores enemy's sp. def by 20%"
+    }
+  }
+}
