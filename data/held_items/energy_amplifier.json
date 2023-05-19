@@ -1,0 +1,10 @@
+{
+  "energy rate": 0.06,
+  "CDR": 0.045,
+  "special effect": {
+    "additional damage": {
+      "damage": "21%",
+      "cooldown": 4
+    }
+  }
+}

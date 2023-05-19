@@ -1,0 +1,9 @@
+{
+  "hp": 240,
+  "special sffect": {
+    "stack increase": {
+      "amount": 200,
+      "stat": "hp"
+    }
+  }
+}

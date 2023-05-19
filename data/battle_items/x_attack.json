@@ -1,0 +1,10 @@
+{
+  "cooldown": 40,
+  "special effect": {
+    "stats buff": {
+      "atk speed": 0.25,
+      "attack": 0.2,
+      "sp. attack": 0.2
+    }
+  }
+}

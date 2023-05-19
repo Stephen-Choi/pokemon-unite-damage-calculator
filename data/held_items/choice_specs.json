@@ -1,0 +1,9 @@
+{
+  "sp. attack": 39,
+  "special effect": {
+    "additional damage": {
+      "damage": "40%, 1 time trigger",
+      "cooldown": 8
+    }
+  }
+}

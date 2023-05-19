@@ -1,0 +1,10 @@
+{
+  "attack": 15,
+  "crit chance": 0.021,
+  "special effect": {
+    "additional damage": {
+      "damage": "20 + 50% attack after using a move",
+      "cooldown": 3
+    }
+  }
+}

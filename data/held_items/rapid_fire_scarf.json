@@ -1,0 +1,12 @@
+{
+  "attack": 12,
+  "atk speed": "9%",
+  "special effect": {
+    "buff": {
+      "effect": "On third auto, increase attack speed by 30%",
+      "internal cooldown": 0.35,
+      "duration": 5,
+      "cooldown": 10
+    }
+  }
+}

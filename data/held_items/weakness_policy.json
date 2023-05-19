@@ -1,0 +1,10 @@
+{
+  "hp": 210,
+  "attack": 15,
+  "special effect": {
+    "buff": {
+      "effect": "When taking damage, increase attack by 3%. Can stack 4 times",
+      "duration": 3
+    }
+  }
+}

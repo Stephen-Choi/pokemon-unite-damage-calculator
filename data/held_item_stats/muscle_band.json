@@ -1,8 +1,0 @@
-{
-  "Attack": 15,
-  "Attack Speed": "7.5%",
-  "Special Effect": {
-    "Additional Damage": "3% of target's remaining HP, capped at 360",
-    "Internal Cooldown": 0.35
-  }
-}
