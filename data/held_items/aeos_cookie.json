@@ -1,6 +1,6 @@
 {
   "hp": 240,
-  "special sffect": {
+  "special effect": {
     "stack increase": {
       "amount": 200,
       "stat": "hp"
