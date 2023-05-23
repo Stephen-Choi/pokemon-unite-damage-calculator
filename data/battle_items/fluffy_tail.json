@@ -1,6 +1,9 @@
 {
   "cooldown": 25,
   "special effect": {
-    "additional damage": "100% attack + 60% sp. attack + 10(level-1) + 100"
+    "additional damage": {
+      "damage": "100% attack + 60% sp. attack + 10(level-1) + 100",
+      "duration": 3
+    }
   }
 }

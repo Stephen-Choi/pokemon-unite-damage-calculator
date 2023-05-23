@@ -23,12 +23,12 @@ func IsBattleItemPlayable(battleItemName string) bool {
 }
 
 type BattleItemEffect struct {
-	UpdatedStats     *stats.Stats
-	AdditionalDamage *float64
+	UpdatedStats     stats.Stats
+	AdditionalDamage AdditionalDamageEffect
 }
 
 type BattleItem interface {
-	Activate(originalStats stats.Stats) (onCooldown bool, effect BattleItemEffect, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, effect BattleItemEffect, err error)
 }
 
 type StatsBuff struct {
@@ -37,12 +37,22 @@ type StatsBuff struct {
 	SpecialAttackBuff float64 `json:"sp. atk,omitempty"`
 }
 
+type AdditionalDamageEffect struct {
+	Damage   float64
+	Duration float64
+}
+
+type AdditionalDamageEffectJSON struct {
+	Damage   string  `json:"-"` // Note: couldn't easily generalize, so will need to handle each damage effect separately
+	Duration float64 `json:"duration"`
+}
+
 type BattleItemSpecialEffect struct {
-	AdditionalDamageEffect *string    `json:"additional damage,omitempty"`
-	StatsBuff              *StatsBuff `json:"stats buff,omitempty"`
+	AdditionalDamage AdditionalDamageEffectJSON `json:"additional damage,omitempty"`
+	StatsBuff        StatsBuff                  `json:"stats buff,omitempty"`
 }
 
 type BattleItemData struct {
-	Cooldown      int                     `json:"cooldown"`
+	Cooldown      float64                 `json:"cooldown"` // Cooldown time in milliseconds
 	SpecialEffect BattleItemSpecialEffect `json:"special effect"`
 }
