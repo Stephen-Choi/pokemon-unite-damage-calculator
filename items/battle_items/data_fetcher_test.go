@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-// Test_fetchHeldItems tests the FetchHeldItemData function
-func Test_fetchHeldItems(t *testing.T) {
+// Test_fetchBattleItems tests the FetchBattleItemData function
+func Test_fetchBattleItems(t *testing.T) {
 	for _, battleItemName := range playableBattleItems {
 		_, err := FetchBattleItemData(battleItemName)
 		assert.NoError(t, err, fmt.Sprintf("failed fetching item: %s", battleItemName))

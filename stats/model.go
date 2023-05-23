@@ -37,11 +37,11 @@ type JsonStats struct {
 // Stats is a struct containing the stats of a pokemon
 type Stats struct {
 	Level             int     `json:"level"`
-	Hp                int     `json:"hp"`
-	Attack            int     `json:"attack"`
-	Defense           int     `json:"def"`
-	SpecialAttack     int     `json:"sp. attack"`
-	SpecialDefense    int     `json:"sp. def"`
+	Hp                float64 `json:"hp"`
+	Attack            float64 `json:"attack"`
+	Defense           float64 `json:"def"`
+	SpecialAttack     float64 `json:"sp. attack"`
+	SpecialDefense    float64 `json:"sp. def"`
 	AttackSpeed       float64 `json:"atk spd"`
 	CriticalHitChance float64 `json:"crit chance"`
 	CriticalHitDamage float64 `json:"crit dmg"` // Critical attack is default base 200% for all pokemon
@@ -56,27 +56,27 @@ func ToTypedStats(jsonStats JsonStats) (Stats, error) {
 		fmt.Println("Error parsing level:", err)
 		return Stats{}, err
 	}
-	hp, err := strconv.Atoi(jsonStats.Hp)
+	hp, err := strconv.ParseFloat(jsonStats.Hp, 64)
 	if err != nil {
 		fmt.Println("Error parsing hp:", err)
 		return Stats{}, err
 	}
-	attack, err := strconv.Atoi(jsonStats.Attack)
+	attack, err := strconv.ParseFloat(jsonStats.Attack, 64)
 	if err != nil {
 		fmt.Println("Error parsing attack:", err)
 		return Stats{}, err
 	}
-	defense, err := strconv.Atoi(jsonStats.Defense)
+	defense, err := strconv.ParseFloat(jsonStats.Defense, 64)
 	if err != nil {
 		fmt.Println("Error parsing defense:", err)
 		return Stats{}, err
 	}
-	specialAttack, err := strconv.Atoi(jsonStats.SpecialAttack)
+	specialAttack, err := strconv.ParseFloat(jsonStats.SpecialAttack, 64)
 	if err != nil {
 		fmt.Println("Error parsing special attack:", err)
 		return Stats{}, err
 	}
-	specialDefense, err := strconv.Atoi(jsonStats.SpecialDefense)
+	specialDefense, err := strconv.ParseFloat(jsonStats.SpecialDefense, 64)
 	if err != nil {
 		fmt.Println("Error parsing special defense:", err)
 		return Stats{}, err
