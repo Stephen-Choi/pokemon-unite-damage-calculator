@@ -1,6 +1,6 @@
 {
   "attack": 15,
-  "atk speed": "7.5%",
+  "atk spd": 0.075,
   "special effect": {
     "additional damage": {
       "damage": "3% of target's remaining HP, capped at 360",

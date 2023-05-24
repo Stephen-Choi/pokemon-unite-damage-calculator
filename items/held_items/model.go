@@ -59,6 +59,16 @@ var playableHeldItems = []string{
 	WiseGlassesName,
 }
 
+var DamageDealingItems = []string{
+	ChoiceSpecsName,
+	EnergyAmplifierName,
+	MuscleBandName,
+	RazorClawName,
+	ScopeLensName,
+	RapidFireScarfName,
+	SlickSpoonName,
+}
+
 // IsHeldItemPlayable checks if the given held item exists in game
 func IsHeldItemPlayable(heldItemName string) bool {
 	for _, playableHeldItem := range playableHeldItems {
@@ -70,13 +80,14 @@ func IsHeldItemPlayable(heldItemName string) bool {
 }
 
 type HeldItemEffect struct {
-	UpdatedStats    stats.Stats
-	StatusCondition []attack.StatusConditions
+	UpdatedStats     stats.Stats
+	StatusCondition  []attack.StatusConditions
+	AdditionalDamage attack.AdditionalDamage
 }
 
 type HeldItem interface {
 	GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats)
-	Activate(originalStats stats.Stats) (onCooldown bool, effect HeldItemEffect, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.AttackOption) (onCooldown bool, effect HeldItemEffect, err error)
 }
 
 // HeldItemSpecialEffect contains details about a special effect that a held item provides
