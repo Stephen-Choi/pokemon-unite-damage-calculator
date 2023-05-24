@@ -80,14 +80,19 @@ func IsHeldItemPlayable(heldItemName string) bool {
 }
 
 type HeldItemEffect struct {
-	UpdatedStats     stats.Stats
-	StatusCondition  []attack.StatusConditions
+	UpdatedStats     StatBuff
+	Debuff           attack.Debuff
 	AdditionalDamage attack.AdditionalDamage
+}
+
+type StatBuff struct {
+	stats.Stats
+	Duration float64
 }
 
 type HeldItem interface {
 	GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats)
-	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.AttackOption) (onCooldown bool, effect HeldItemEffect, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error)
 }
 
 // HeldItemSpecialEffect contains details about a special effect that a held item provides

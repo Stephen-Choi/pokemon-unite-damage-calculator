@@ -2,6 +2,7 @@ package helditems
 
 import (
 	"fmt"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
@@ -28,6 +29,6 @@ func (a *FloatStone) GetStatBoosts() stats.Stats {
 	return a.Stats
 }
 
-func (a *FloatStone) Activate(originalStats stats.Stats) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *FloatStone) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
 	panic("Not implemented")
 }

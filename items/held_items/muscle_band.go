@@ -32,7 +32,7 @@ func (item *MuscleBand) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-func (item *MuscleBand) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.AttackOption) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *MuscleBand) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if item.isOnCooldown(elapsedTime) {
 		onCooldown = true
@@ -40,7 +40,7 @@ func (item *MuscleBand) Activate(originalStats stats.Stats, elapsedTime float64,
 	}
 
 	// Muscle Band only activates on basic attack
-	if (attackOption != attack.BasicAttack) && (attackOption != attack.CriticalHitBasicAttack) {
+	if attackOption != attack.BasicAttack && attackOption != attack.CriticalHitBasicAttack {
 		return // early return, don't trigger cooldown
 	}
 
