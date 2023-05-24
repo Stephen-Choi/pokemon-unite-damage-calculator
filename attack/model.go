@@ -4,10 +4,11 @@ package attack
 type AttackOption string
 
 const (
-	Move1       AttackOption = "move1"
-	Move2       AttackOption = "move2"
-	UniteMove   AttackOption = "uniteMove"
-	BasicAttack AttackOption = "basicAttack"
+	Move1                  AttackOption = "move1"
+	Move2                  AttackOption = "move2"
+	UniteMove              AttackOption = "uniteMove"
+	BasicAttack            AttackOption = "basicAttack"
+	CriticalHitBasicAttack AttackOption = "criticalHitBasicAttack"
 )
 
 // StatusConditions is an enum for the different types of status conditions a pokemon can inflict

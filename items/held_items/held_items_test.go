@@ -42,4 +42,19 @@ func Test_cooldowns(t *testing.T) {
 		assert.NoError(t, err)
 		testCooldown(t, energyAmplifier, energyAmplifier.SpecialEffect.Buff.Cooldown, attack.UniteMove)
 	})
+	t.Run("Muscle Band", func(t *testing.T) {
+		muscleBand, err := NewMuscleBand()
+		assert.NoError(t, err)
+		testCooldown(t, muscleBand, muscleBand.SpecialEffect.AdditionalDamage.InternalCooldown, attack.BasicAttack)
+	})
+	t.Run("Razor Claw", func(t *testing.T) {
+		razorClaw, err := NewRazorClaw()
+		assert.NoError(t, err)
+		testCooldown(t, razorClaw, razorClaw.SpecialEffect.AdditionalDamage.Cooldown, attack.Move2)
+	})
+	t.Run("Scope Lens", func(t *testing.T) {
+		scopeLens, err := NewScopeLens()
+		assert.NoError(t, err)
+		testCooldown(t, scopeLens, scopeLens.SpecialEffect.AdditionalDamage.Cooldown, attack.CriticalHitBasicAttack)
+	})
 }

@@ -40,7 +40,7 @@ func (item *MuscleBand) Activate(originalStats stats.Stats, elapsedTime float64,
 	}
 
 	// Muscle Band only activates on basic attack
-	if attackOption != attack.BasicAttack {
+	if (attackOption != attack.BasicAttack) && (attackOption != attack.CriticalHitBasicAttack) {
 		return // early return, don't trigger cooldown
 	}
 
