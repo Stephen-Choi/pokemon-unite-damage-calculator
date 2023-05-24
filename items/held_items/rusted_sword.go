@@ -25,7 +25,7 @@ func NewRustedSword() (rustedSword *RustedSword, err error) {
 	return
 }
 
-func (a *RustedSword) GetStatBoosts() stats.Stats {
+func (a *RustedSword) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

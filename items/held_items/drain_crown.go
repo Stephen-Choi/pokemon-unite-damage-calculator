@@ -25,7 +25,7 @@ func NewDrainCrown() (drainCrown *DrainCrown, err error) {
 	return
 }
 
-func (a *DrainCrown) GetStatBoosts() stats.Stats {
+func (a *DrainCrown) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

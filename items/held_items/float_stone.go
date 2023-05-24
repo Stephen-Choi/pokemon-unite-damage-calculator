@@ -25,7 +25,7 @@ func NewFloatStone() (floatStone *FloatStone, err error) {
 	return
 }
 
-func (a *FloatStone) GetStatBoosts() stats.Stats {
+func (a *FloatStone) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

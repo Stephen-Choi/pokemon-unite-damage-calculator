@@ -25,7 +25,7 @@ func NewExpShare() (expShare *ExpShare, err error) {
 	return
 }
 
-func (a *ExpShare) GetStatBoosts() stats.Stats {
+func (a *ExpShare) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

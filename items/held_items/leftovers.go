@@ -25,7 +25,7 @@ func NewLeftovers() (leftovers *Leftovers, err error) {
 	return
 }
 
-func (a *Leftovers) GetStatBoosts() stats.Stats {
+func (a *Leftovers) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

@@ -12,7 +12,7 @@ func Test_focusBand(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating focus band: %v", err)
 		}
-		statBoost := focusBand.GetStatBoosts()
+		statBoost := focusBand.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Defense: 30, SpecialDefense: 30}, statBoost)
 	})
 }

@@ -27,7 +27,7 @@ func NewSpecialAttackSpecs(numStacks int) (specialAttackSpecs *SpecialAttackSpec
 	return
 }
 
-func (a *SpecialAttackSpecs) GetStatBoosts() stats.Stats {
+func (a *SpecialAttackSpecs) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	stackBoosts := a.numStacks * a.SpecialEffect.Stack.Amount
 	a.Stats.SpecialAttack += float64(stackBoosts)
 	return a.Stats

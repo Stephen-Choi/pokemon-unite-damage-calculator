@@ -25,7 +25,7 @@ func NewRockyHelmet() (rockyHelmet *RockyHelmet, err error) {
 	return
 }
 
-func (a *RockyHelmet) GetStatBoosts() stats.Stats {
+func (a *RockyHelmet) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

@@ -12,7 +12,7 @@ func Test_buddyBarrier(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating buddy barrier: %v", err)
 		}
-		statBoost := buddyBarrier.GetStatBoosts()
+		statBoost := buddyBarrier.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 450}, statBoost)
 	})
 }

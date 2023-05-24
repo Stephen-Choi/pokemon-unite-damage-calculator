@@ -25,7 +25,7 @@ func NewFocusBand() (focusBand *FocusBand, err error) {
 	return
 }
 
-func (a *FocusBand) GetStatBoosts() stats.Stats {
+func (a *FocusBand) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

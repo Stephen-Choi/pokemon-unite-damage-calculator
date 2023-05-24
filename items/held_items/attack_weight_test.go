@@ -16,7 +16,7 @@ func Test_attackWeight(t *testing.T) {
 		if attackWeight.numStacks != stacks {
 			t.Errorf("Expected attack weight stacks to be %d, got %v", stacks, attackWeight.numStacks)
 		}
-		statBoost := attackWeight.GetStatBoosts()
+		statBoost := attackWeight.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Attack: 18.0 + (12.0 * float64(stacks))}, statBoost)
 	})
 }

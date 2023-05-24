@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-func Test_scoreShield(t *testing.T) {
+func Test_expShare(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		scoreShield, err := NewScoreShield()
+		expShare, err := NewExpShare()
 		if err != nil {
 			t.Errorf("Error creating score shield: %v", err)
 		}
-		statBoost := scoreShield.GetStatBoosts()
-		assert.Equal(t, stats.Stats{Hp: 450}, statBoost)
+		statBoost := expShare.GetStatBoosts(stats.Stats{})
+		assert.Equal(t, stats.Stats{Hp: 240}, statBoost)
 	})
 }
