@@ -12,7 +12,7 @@ func Test_drainCrown(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating drain crown: %v", err)
 		}
-		statBoost := drainCrown.GetStatBoosts()
+		statBoost := drainCrown.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 120, Attack: 18}, statBoost)
 	})
 }

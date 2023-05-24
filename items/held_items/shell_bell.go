@@ -25,7 +25,7 @@ func NewShellBell() (shellBell *ShellBell, err error) {
 	return
 }
 
-func (a *ShellBell) GetStatBoosts() stats.Stats {
+func (a *ShellBell) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

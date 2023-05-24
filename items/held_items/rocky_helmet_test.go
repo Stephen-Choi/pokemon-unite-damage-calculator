@@ -12,7 +12,7 @@ func Test_rockyHelmet(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating rocky helmet: %v", err)
 		}
-		statBoost := rockyHelmet.GetStatBoosts()
+		statBoost := rockyHelmet.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 270.0, Defense: 51.0}, statBoost)
 	})
 }

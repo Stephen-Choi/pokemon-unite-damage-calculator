@@ -12,7 +12,7 @@ func Test_floatStone(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating float stone: %v", err)
 		}
-		statBoost := floatStone.GetStatBoosts()
+		statBoost := floatStone.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Attack: 24.0}, statBoost)
 	})
 }

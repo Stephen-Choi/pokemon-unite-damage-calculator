@@ -12,7 +12,7 @@ func Test_rescueHood(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating rescue hood: %v", err)
 		}
-		statBoost := rescueHood.GetStatBoosts()
+		statBoost := rescueHood.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Defense: 30.0, SpecialDefense: 30.0}, statBoost)
 	})
 }

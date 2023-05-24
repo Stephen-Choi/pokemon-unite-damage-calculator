@@ -16,7 +16,7 @@ func Test_specialAttackSpecs(t *testing.T) {
 		if specialAttackSpecs.numStacks != stacks {
 			t.Errorf("Expected special attack specs stacks to be %d, got %v", stacks, specialAttackSpecs.numStacks)
 		}
-		statBoost := specialAttackSpecs.GetStatBoosts()
+		statBoost := specialAttackSpecs.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{SpecialAttack: 24.0 + (16.0 * float64(stacks))}, statBoost)
 	})
 }

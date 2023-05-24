@@ -12,7 +12,7 @@ func Test_leftovers(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating leftovers: %v", err)
 		}
-		statBoost := leftovers.GetStatBoosts()
+		statBoost := leftovers.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 360}, statBoost)
 	})
 }

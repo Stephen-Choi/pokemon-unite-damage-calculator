@@ -12,7 +12,7 @@ func Test_shellBell(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating shell bell: %v", err)
 		}
-		statBoost := shellBell.GetStatBoosts()
+		statBoost := shellBell.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{SpecialAttack: 24.0, CooldownReduction: 0.045}, statBoost)
 	})
 }

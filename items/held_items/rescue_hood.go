@@ -25,7 +25,7 @@ func NewRescueHood() (rescueHood *RescueHood, err error) {
 	return
 }
 
-func (a *RescueHood) GetStatBoosts() stats.Stats {
+func (a *RescueHood) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

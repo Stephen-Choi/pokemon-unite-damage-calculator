@@ -27,7 +27,7 @@ func NewAeosCookie(numStacks int) (aeosCookie *AeosCookie, err error) {
 	return
 }
 
-func (a *AeosCookie) GetStatBoosts() stats.Stats {
+func (a *AeosCookie) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	stackBoosts := a.numStacks * a.SpecialEffect.Stack.Amount
 	a.Stats.Hp += float64(stackBoosts)
 	return a.Stats

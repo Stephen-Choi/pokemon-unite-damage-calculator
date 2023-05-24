@@ -25,7 +25,7 @@ func NewScoreShield() (scoreShield *ScoreShield, err error) {
 	return
 }
 
-func (s *ScoreShield) GetStatBoosts() stats.Stats {
+func (s *ScoreShield) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return s.Stats
 }
 

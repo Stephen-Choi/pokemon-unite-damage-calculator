@@ -25,7 +25,7 @@ func NewAssaultVest() (assaultVest *AssaultVest, err error) {
 	return
 }
 
-func (a *AssaultVest) GetStatBoosts() stats.Stats {
+func (a *AssaultVest) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 

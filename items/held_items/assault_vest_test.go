@@ -12,7 +12,7 @@ func Test_assaultVest(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating assault vest: %v", err)
 		}
-		statBoost := assaultVest.GetStatBoosts()
+		statBoost := assaultVest.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 270, SpecialDefense: 51}, statBoost)
 	})
 }

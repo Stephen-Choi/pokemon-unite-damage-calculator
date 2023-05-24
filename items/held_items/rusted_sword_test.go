@@ -12,7 +12,7 @@ func Test_rustedSword(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating rusted sword: %v", err)
 		}
-		statBoost := rustedSword.GetStatBoosts()
+		statBoost := rustedSword.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{}, statBoost)
 	})
 }

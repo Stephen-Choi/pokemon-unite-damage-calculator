@@ -12,7 +12,7 @@ func Test_weaknessPolicy(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error creating weakness policy: %v", err)
 		}
-		statBoost := weaknessPolicy.GetStatBoosts()
+		statBoost := weaknessPolicy.GetStatBoosts(stats.Stats{})
 		assert.Equal(t, stats.Stats{Hp: 210.0, Attack: 15.0}, statBoost)
 	})
 }
