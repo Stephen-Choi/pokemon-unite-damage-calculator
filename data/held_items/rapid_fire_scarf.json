@@ -1,6 +1,6 @@
 {
   "attack": 12,
-  "atk speed": "9%",
+  "atk spd": 0.09,
   "special effect": {
     "buff": {
       "effect": "On third auto, increase attack speed by 30%",

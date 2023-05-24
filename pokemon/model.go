@@ -126,6 +126,6 @@ func IsPokemonPlayable(pokemonName string) bool {
 
 // Pokemon is an interface for all pokemon
 type Pokemon interface {
-	GetAvailableAttacks() (availableAttacks []attack.AttackOption, err error)                                          // Get the available attacks for a pokemon that are not on cooldown
-	Attack(attack attack.AttackOption) (damageDealt int, additionalStatusEffects []attack.StatusConditions, err error) // Get the attack dealt by a pokemon's attack and possible status effects
+	GetAvailableAttacks() (availableAttacks []attack.Option, err error)                                          // Get the available attacks for a pokemon that are not on cooldown
+	Attack(attack attack.Option) (damageDealt int, additionalStatusEffects []attack.StatusConditions, err error) // Get the attack dealt by a pokemon's attack and possible status effects
 }

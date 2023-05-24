@@ -1,22 +1,37 @@
 package attack
 
-// AttackOption is an enum for the different types of attacks a pokemon can do
-type AttackOption string
+import "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+
+type Type string
 
 const (
-	Move1                  AttackOption = "move1"
-	Move2                  AttackOption = "move2"
-	UniteMove              AttackOption = "uniteMove"
-	BasicAttack            AttackOption = "basicAttack"
-	CriticalHitBasicAttack AttackOption = "criticalHitBasicAttack"
+	PhysicalAttack Type = "physical"
+	SpecialAttack  Type = "special"
 )
 
-// StatusConditions is an enum for the different types of status conditions a pokemon can inflict
-type StatusConditions string
+// Option is an enum for the different types of attacks a pokemon can do
+type Option string
 
 const (
-	burned StatusConditions = "burned"
+	Move1                  Option = "move1"
+	Move2                  Option = "move2"
+	UniteMove              Option = "uniteMove"
+	BasicAttack            Option = "basicAttack"
+	CriticalHitBasicAttack Option = "criticalHitBasicAttack"
 )
+
+// DebuffType is an enum for the different types of status conditions a pokemon can inflict
+type DebuffType string
+
+const (
+	IgnoreDefense DebuffType = "ignoreDefense"
+)
+
+// Debuff is a struct containing the type and amount of debuff to be applied
+type Debuff struct {
+	DebuffType DebuffType
+	stats.Stats
+}
 
 type AdditionalDamageType string
 
