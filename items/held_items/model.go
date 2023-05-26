@@ -80,14 +80,9 @@ func IsHeldItemPlayable(heldItemName string) bool {
 }
 
 type HeldItemEffect struct {
-	UpdatedStats     StatBuff
+	UpdatedStats     stats.StatBuff
 	Debuff           attack.Debuff
 	AdditionalDamage attack.AdditionalDamage
-}
-
-type StatBuff struct {
-	stats.Stats
-	Duration float64
 }
 
 type HeldItem interface {

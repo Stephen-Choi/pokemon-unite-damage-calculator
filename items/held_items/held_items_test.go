@@ -45,7 +45,7 @@ func Test_cooldowns(t *testing.T) {
 	t.Run("Muscle Band", func(t *testing.T) {
 		muscleBand, err := NewMuscleBand()
 		assert.NoError(t, err)
-		testCooldown(t, muscleBand, muscleBand.SpecialEffect.AdditionalDamage.InternalCooldown, attack.BasicAttack, attack.PhysicalAttack)
+		testCooldown(t, muscleBand, muscleBand.SpecialEffect.AdditionalDamage.InternalCooldown, attack.BasicAttackOption, attack.PhysicalAttack)
 	})
 	t.Run("Razor Claw", func(t *testing.T) {
 		razorClaw, err := NewRazorClaw()

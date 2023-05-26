@@ -46,7 +46,7 @@ func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime floa
 	}
 
 	// Rapid Fire Scarf only activates on basic attack
-	if attackOption != attack.BasicAttack && attackOption != attack.CriticalHitBasicAttack {
+	if attackOption != attack.BasicAttackOption && attackOption != attack.CriticalHitBasicAttack {
 		return // early return, don't trigger cooldown
 	}
 
@@ -58,11 +58,11 @@ func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime floa
 	}
 
 	// Perform Rapid Fire Scarf effect
-	effect.UpdatedStats = StatBuff{
+	effect.UpdatedStats = stats.StatBuff{
 		Stats: stats.Stats{
 			AttackSpeed: 0.3 * float64(originalStats.AttackSpeed),
 		},
-		Duration: item.SpecialEffect.Buff.Cooldown,
+		DurationEnd: elapsedTime + item.SpecialEffect.Buff.Duration,
 	}
 
 	// Put the held item on cooldown

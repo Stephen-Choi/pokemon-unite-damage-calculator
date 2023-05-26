@@ -1,117 +1,124 @@
 package pokemon
 
-import "github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
+import (
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
+)
+
+const (
+	ErrInvalidMovesetForLevel = "moveset is not available for the select pokemon's level"
+)
 
 const maxLevel = 15
 
 const (
-	absolName           = "absol"
-	chandelureName      = "chandelure"
-	decidueyeName       = "decidueye"
-	espeonName          = "espeon"
-	greninjaName        = "greninja"
-	mrMimeName          = "mr_mime"
-	talonflameName      = "talonflame"
-	zacianName          = "zacian"
-	aegislashName       = "aegislash"
-	charizardName       = "charizard"
-	delphoxName         = "delphox"
-	garchompName        = "garchomp"
-	hoopaName           = "hoopa"
-	pikachuName         = "pikachu"
-	trevenantName       = "trevenant"
-	zeraoraName         = "zeraora"
-	alolanNinetalesName = "alolan_ninetales"
-	cinderaceName       = "cinderace"
-	dodrioName          = "dodrio"
-	gardevoirName       = "gardevoir"
-	laprasName          = "lapras"
-	sableyeName         = "sableye"
-	tsareenaName        = "tsareena"
-	zoroarkName         = "zoroark"
-	azumarillName       = "azumarill"
-	clefableName        = "clefable"
-	dragapultName       = "dragapult"
-	gengarName          = "gengar"
-	lucarioName         = "lucario"
-	scizorName          = "scizor"
-	tyranitarName       = "tyranitar"
-	blastoiseName       = "blastoise"
-	comfeyName          = "comfey"
-	dragoniteName       = "dragonite"
-	glaceonName         = "glaceon"
-	machampName         = "machamp"
-	slowbroName         = "slowbro"
-	urshifuName         = "urshifu"
-	blisseyName         = "blissey"
-	cramorantName       = "cramorant"
-	duraludonName       = "duraludon"
-	goodraName          = "goodra"
-	mamoswineName       = "mamoswine"
-	snorlaxName         = "snorlax"
-	venusaurName        = "venusaur"
-	buzzwoleName        = "buzzwole"
-	crustleName         = "crustle"
-	eldegossName        = "eldegoss"
-	greedentName        = "greedent"
-	mewName             = "mew"
-	sylveonName         = "sylveon"
-	wigglytuffName      = "wigglytuff"
+	AbsolName           = "absol"
+	ChandelureName      = "chandelure"
+	DecidueyeName       = "decidueye"
+	EspeonName          = "espeon"
+	GreninjaName        = "greninja"
+	MrMimeName          = "mr_mime"
+	TalonflameName      = "talonflame"
+	ZacianName          = "zacian"
+	AegislashName       = "aegislash"
+	CharizardName       = "charizard"
+	DelphoxName         = "delphox"
+	GarchompName        = "garchomp"
+	HoopaName           = "hoopa"
+	PikachuName         = "pikachu"
+	TrevenantName       = "trevenant"
+	ZeraoraName         = "zeraora"
+	AlolanNinetalesName = "alolan_ninetales"
+	CinderaceName       = "cinderace"
+	DodrioName          = "dodrio"
+	GardevoirName       = "gardevoir"
+	LaprasName          = "lapras"
+	SableyeName         = "sableye"
+	TsareenaName        = "tsareena"
+	ZoroarkName         = "zoroark"
+	AzumarillName       = "azumarill"
+	ClefableName        = "clefable"
+	DragapultName       = "dragapult"
+	GengarName          = "gengar"
+	LucarioName         = "lucario"
+	ScizorName          = "scizor"
+	TyranitarName       = "tyranitar"
+	BlastoiseName       = "blastoise"
+	ComfeyName          = "comfey"
+	DragoniteName       = "dragonite"
+	GlaceonName         = "glaceon"
+	MachampName         = "machamp"
+	SlowbroName         = "slowbro"
+	UrshifuName         = "urshifu"
+	BlisseyName         = "blissey"
+	CramorantName       = "cramorant"
+	DuraludonName       = "duraludon"
+	GoodraName          = "goodra"
+	MamoswineName       = "mamoswine"
+	SnorlaxName         = "snorlax"
+	VenusaurName        = "venusaur"
+	BuzzwoleName        = "buzzwole"
+	CrustleName         = "crustle"
+	EldegossName        = "eldegoss"
+	GreedentName        = "greedent"
+	MewName             = "mew"
+	SylveonName         = "sylveon"
+	WigglytuffName      = "wigglytuff"
 )
 
 var PlayablePokemons = []string{
-	absolName,
-	chandelureName,
-	decidueyeName,
-	espeonName,
-	greninjaName,
-	mrMimeName,
-	talonflameName,
-	zacianName,
-	aegislashName,
-	charizardName,
-	delphoxName,
-	garchompName,
-	hoopaName,
-	pikachuName,
-	trevenantName,
-	zeraoraName,
-	alolanNinetalesName,
-	cinderaceName,
-	dodrioName,
-	gardevoirName,
-	laprasName,
-	sableyeName,
-	tsareenaName,
-	zoroarkName,
-	azumarillName,
-	clefableName,
-	dragapultName,
-	gengarName,
-	lucarioName,
-	scizorName,
-	tyranitarName,
-	blastoiseName,
-	comfeyName,
-	dragoniteName,
-	glaceonName,
-	machampName,
-	slowbroName,
-	urshifuName,
-	blisseyName,
-	cramorantName,
-	duraludonName,
-	goodraName,
-	mamoswineName,
-	snorlaxName,
-	venusaurName,
-	buzzwoleName,
-	crustleName,
-	eldegossName,
-	greedentName,
-	mewName,
-	sylveonName,
-	wigglytuffName,
+	AbsolName,
+	ChandelureName,
+	DecidueyeName,
+	EspeonName,
+	GreninjaName,
+	MrMimeName,
+	TalonflameName,
+	ZacianName,
+	AegislashName,
+	CharizardName,
+	DelphoxName,
+	GarchompName,
+	HoopaName,
+	PikachuName,
+	TrevenantName,
+	ZeraoraName,
+	AlolanNinetalesName,
+	CinderaceName,
+	DodrioName,
+	GardevoirName,
+	LaprasName,
+	SableyeName,
+	TsareenaName,
+	ZoroarkName,
+	AzumarillName,
+	ClefableName,
+	DragapultName,
+	GengarName,
+	LucarioName,
+	ScizorName,
+	TyranitarName,
+	BlastoiseName,
+	ComfeyName,
+	DragoniteName,
+	GlaceonName,
+	MachampName,
+	SlowbroName,
+	UrshifuName,
+	BlisseyName,
+	CramorantName,
+	DuraludonName,
+	GoodraName,
+	MamoswineName,
+	SnorlaxName,
+	VenusaurName,
+	BuzzwoleName,
+	CrustleName,
+	EldegossName,
+	GreedentName,
+	MewName,
+	SylveonName,
+	WigglytuffName,
 }
 
 // IsPokemonPlayable checks if a pokemon is playable
@@ -124,8 +131,8 @@ func IsPokemonPlayable(pokemonName string) bool {
 	return false
 }
 
-// Pokemon is an interface for all pokemon
+// Pokemon is an interface for all playable pokemon
 type Pokemon interface {
-	GetAvailableAttacks() (availableAttacks []attack.Option, err error)                                          // Get the available attacks for a pokemon that are not on cooldown
-	Attack(attack attack.Option) (damageDealt int, additionalStatusEffects []attack.StatusConditions, err error) // Get the attack dealt by a pokemon's attack and possible status effects
+	GetAvailableAttacks(elapsedTime float64) (availableAttacks []attack.Option, err error)                          // Get the available attacks for a pokemon that are not on cooldown
+	Attack(attack attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) // Get the attack dealt by a pokemon's attack and possible status effects
 }

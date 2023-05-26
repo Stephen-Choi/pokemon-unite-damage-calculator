@@ -49,6 +49,100 @@ type Stats struct {
 	EnergyRate        float64 `json:"energy rate"`
 }
 
+func (s *Stats) ApplyBuffs(buffs Buffs) {
+	for buffName, buff := range buffs {
+		if !buff.Applied {
+			s.applyBuff(buff)
+
+			// Set the buff to applied
+			statBuff := buffs[buffName]
+			statBuff.Applied = true
+			buffs[buffName] = statBuff
+		}
+	}
+}
+
+// applyBuff applies the buff to current stats
+func (s *Stats) applyBuff(buff StatBuff) {
+	switch buff.BuffType {
+	case PercentIncrease:
+		s.Hp *= 1 + buff.Hp
+		s.Attack *= 1 + buff.Attack
+		s.Defense *= 1 + buff.Defense
+		s.SpecialAttack *= 1 + buff.SpecialAttack
+		s.SpecialDefense *= 1 + buff.SpecialDefense
+		s.AttackSpeed *= 1 + buff.AttackSpeed
+		s.CriticalHitChance *= 1 + buff.CriticalHitChance
+		s.CriticalHitDamage *= 1 + buff.CriticalHitDamage
+		s.CooldownReduction *= 1 + buff.CooldownReduction
+	case FlatIncrease:
+		s.Hp += buff.Hp
+		s.Attack += buff.Attack
+		s.Defense += buff.Defense
+		s.SpecialAttack += buff.SpecialAttack
+		s.SpecialDefense += buff.SpecialDefense
+		s.AttackSpeed += buff.AttackSpeed
+		s.CriticalHitChance += buff.CriticalHitChance
+		s.CriticalHitDamage += buff.CriticalHitDamage
+		s.CooldownReduction += buff.CooldownReduction
+	}
+}
+
+// RemoveExpiredBuffs removes buffs that have already expired from current stats
+func (s *Stats) RemoveExpiredBuffs(buffs Buffs, elapsedTime float64) {
+	for buffName, buff := range buffs {
+		// If buff is expired
+		if buff.DurationEnd < elapsedTime {
+			s.removeBuff(buff)
+			delete(buffs, buffName) // remove buff from map of buffs
+		}
+	}
+}
+
+// removeBuff removes the buff from current stats
+func (s *Stats) removeBuff(buff StatBuff) {
+	switch buff.BuffType {
+	case PercentIncrease:
+		s.Hp /= 1 + buff.Hp
+		s.Attack /= 1 + buff.Attack
+		s.Defense /= 1 + buff.Defense
+		s.SpecialAttack /= 1 + buff.SpecialAttack
+		s.SpecialDefense /= 1 + buff.SpecialDefense
+		s.AttackSpeed /= 1 + buff.AttackSpeed
+		s.CriticalHitChance /= 1 + buff.CriticalHitChance
+		s.CriticalHitDamage /= 1 + buff.CriticalHitDamage
+		s.CooldownReduction /= 1 + buff.CooldownReduction
+	case FlatIncrease:
+		s.Hp -= buff.Hp
+		s.Attack -= buff.Attack
+		s.Defense -= buff.Defense
+		s.SpecialAttack -= buff.SpecialAttack
+		s.SpecialDefense -= buff.SpecialDefense
+		s.AttackSpeed -= buff.AttackSpeed
+		s.CriticalHitChance -= buff.CriticalHitChance
+		s.CriticalHitDamage -= buff.CriticalHitDamage
+		s.CooldownReduction -= buff.CooldownReduction
+	}
+}
+
+type BuffType string
+
+const (
+	PercentIncrease BuffType = "percentIncrease"
+	FlatIncrease    BuffType = "flatIncrease"
+)
+
+type StatBuff struct {
+	Stats
+	DurationEnd float64  // DurationEnd is a time in milliseconds which holds the time when the buff ends
+	BuffType    BuffType // BuffType is the type of buff, either percentIncrease or flatIncrease
+	Applied     bool
+}
+
+func (s StatBuff) Exists() bool {
+	return s != StatBuff{}
+}
+
 // ToTypedStats converts the JsonStats struct to the internal use typed Stats struct
 func ToTypedStats(jsonStats JsonStats) (Stats, error) {
 	level, err := strconv.Atoi(jsonStats.Level)
@@ -128,11 +222,15 @@ func convertPercentToFloat(percentString string) (float64, error) {
 type BuffName string
 
 const (
-	move1Buff       BuffName = "move1Buff"
-	move2Buff       BuffName = "move2Buff"
-	uniteMoveBuff   BuffName = "uniteMoveBuff"
-	basicAttackBuff BuffName = "basicAttackBuff"
+	Move1Buff       BuffName = "move1Buff"
+	Move2Buff       BuffName = "move2Buff"
+	UniteMoveBuff   BuffName = "uniteMoveBuff"
+	BasicAttackBuff BuffName = "basicAttackBuff"
 )
 
 // Buffs is a map of buffs applied on a pokemon
-type Buffs map[BuffName]map[StatName]float64
+type Buffs map[BuffName]StatBuff
+
+func (b Buffs) AddBuff(buffName BuffName, buff StatBuff) {
+	b[buffName] = buff
+}
