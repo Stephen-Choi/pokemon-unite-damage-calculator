@@ -30,7 +30,7 @@ func testCooldown(t *testing.T, heldItem HeldItem, itemCooldown float64, attackO
 	assert.False(t, onCooldown)
 }
 
-// Test_cooldowns tests the cooldowns of all battle items
+// Test_cooldowns tests the time of all battle items
 func Test_cooldowns(t *testing.T) {
 	t.Run("ChoiceSpecs", func(t *testing.T) {
 		choiceSpecs, err := NewChoiceSpecs()

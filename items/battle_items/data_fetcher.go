@@ -3,7 +3,7 @@ package battleitems
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/cooldowns"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -32,6 +32,6 @@ func FetchBattleItemData(battleItemName string) (battleItemData BattleItemData, 
 	}
 
 	// Convert cooldown from seconds to milliseconds
-	battleItemData.Cooldown = cooldowns.ConvertSecondsToMilliseconds(battleItemData.Cooldown)
+	battleItemData.Cooldown = time.ConvertSecondsToMilliseconds(battleItemData.Cooldown)
 	return battleItemData, nil
 }

@@ -1,4 +1,4 @@
-package cooldowns
+package time
 
 // ConvertSecondsToMilliseconds converts seconds to milliseconds
 func ConvertSecondsToMilliseconds(timeInSeconds float64) (timeInMilliseconds float64) {

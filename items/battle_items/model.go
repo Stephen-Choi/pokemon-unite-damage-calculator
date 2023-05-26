@@ -22,19 +22,16 @@ func IsBattleItemPlayable(battleItemName string) bool {
 	return false
 }
 
-type BattleItemEffect struct {
-	UpdatedStats     stats.Stats
-	AdditionalDamage AdditionalDamageEffect
-}
-
 type BattleItem interface {
-	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, effect BattleItemEffect, err error)
+	IsAvailable(elapsedTime float64) bool
+	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, buff stats.Buff, err error)
 }
 
 type StatsBuff struct {
 	AttackBuff        float64 `json:"attack,omitempty"`
 	AttackSpeedBuff   float64 `json:"atk speed,omitempty"`
 	SpecialAttackBuff float64 `json:"sp. atk,omitempty"`
+	Duration          float64 `json:"duration,omitempty"`
 }
 
 type AdditionalDamageEffect struct {

@@ -129,12 +129,13 @@ func getMove(moveName string, level int) (move attack.SkillMove, err error) {
 	return
 }
 
-func (p *Pikachu) GetAvailableAttacks(elapsedTime float64) (availableAttacks []attack.Option, err error) {
+func (p *Pikachu) GetAvailableActions(elapsedTime float64) (availableAttacks []attack.Option, isBattleItemAvailable bool, err error) {
 	// Basic attacks are always available
 	availableAttacks = []attack.Option{
 		attack.BasicAttackOption,
 	}
 
+	// Check if skills are available
 	if p.move1.IsAvailable(elapsedTime) {
 		availableAttacks = append(availableAttacks, attack.Move1)
 	}
@@ -145,6 +146,42 @@ func (p *Pikachu) GetAvailableAttacks(elapsedTime float64) (availableAttacks []a
 		availableAttacks = append(availableAttacks, attack.UniteMove)
 	}
 
+	// Check if battle item is available
+	isBattleItemAvailable = p.BattleItem.IsAvailable(elapsedTime)
+
+	return
+}
+
+// ActivateBattleItem attempts to activate the battle item
+func (p *Pikachu) ActivateBattleItem(elapsedTime float64) {
+	_, battleItemBuff, err := p.BattleItem.Activate(p.getStats(), elapsedTime)
+	if err != nil {
+		return
+	}
+
+	if battleItemBuff.Exists() {
+		p.Buffs.AddBuff(stats.BattleItemBuff, battleItemBuff)
+	}
+}
+
+// activateHeldItems attempts to activate held items
+// Note: since most held items are triggered automatically, no need to export this method. Can simply call it after an attack occurs
+func (p *Pikachu) activateHeldItems(attackResult attack.Result, elapsedTime float64) (result attack.Result, err error) {
+
+	// TODO CONTINUE HERE...
+	result = attackResult
+
+	// IF A BUFF IS RETURNED, APPLY IT DIRECTLY HERE
+	for _, heldItem := range p.HeldItems {
+		_, heldItemBuff, err := heldItem.Activate(p.getStats(), elapsedTime)
+		if err != nil {
+			return result, err
+		}
+
+		if heldItemBuff.Exists() {
+			p.Buffs.AddBuff(stats.HeldItemBuff, heldItemBuff)
+		}
+	}
 	return
 }
 
@@ -161,7 +198,6 @@ func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon,
 	default:
 		err = errors.New("invalid attack option")
 	}
-
 	if err != nil {
 		return
 	}
@@ -170,10 +206,15 @@ func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon,
 		p.addBuff(attackOption, result.Buff)
 	}
 
+	// Attempt to apply held item effects
+	result, err = p.activateHeldItems(result, elapsedTime)
+
+	// TODO APPLY DAMAGE BUFFS HERE...
+
 	return
 }
 
-func (p *Pikachu) addBuff(attackOption attack.Option, buff stats.StatBuff) {
+func (p *Pikachu) addBuff(attackOption attack.Option, buff stats.Buff) {
 	switch attackOption {
 	case attack.BasicAttackOption:
 		p.Buffs.AddBuff(stats.BasicAttackBuff, buff)

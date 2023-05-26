@@ -60,7 +60,7 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 			DamageFrequency: damageFrequency,
 			DurationEnd:     elapsedTime + moveDuration,
 		},
-		Buff: stats.StatBuff{
+		Buff: stats.Buff{
 			DurationEnd: uniteBuffDuration + elapsedTime,
 			Stats: stats.Stats{
 				CooldownReduction: 0.3,

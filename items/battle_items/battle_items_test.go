@@ -29,7 +29,7 @@ func testCooldown(t *testing.T, battleItem BattleItem, itemCooldown float64) {
 	assert.False(t, onCooldown)
 }
 
-// Test_cooldowns tests the cooldowns of all battle items
+// Test_cooldowns tests the time of all battle items
 func Test_cooldowns(t *testing.T) {
 	t.Run("FluffyTail", func(t *testing.T) {
 		fluffyTail, err := NewFluffyTail()

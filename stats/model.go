@@ -63,7 +63,7 @@ func (s *Stats) ApplyBuffs(buffs Buffs) {
 }
 
 // applyBuff applies the buff to current stats
-func (s *Stats) applyBuff(buff StatBuff) {
+func (s *Stats) applyBuff(buff Buff) {
 	switch buff.BuffType {
 	case PercentIncrease:
 		s.Hp *= 1 + buff.Hp
@@ -100,7 +100,7 @@ func (s *Stats) RemoveExpiredBuffs(buffs Buffs, elapsedTime float64) {
 }
 
 // removeBuff removes the buff from current stats
-func (s *Stats) removeBuff(buff StatBuff) {
+func (s *Stats) removeBuff(buff Buff) {
 	switch buff.BuffType {
 	case PercentIncrease:
 		s.Hp /= 1 + buff.Hp
@@ -132,15 +132,16 @@ const (
 	FlatIncrease    BuffType = "flatIncrease"
 )
 
-type StatBuff struct {
+type Buff struct {
 	Stats
-	DurationEnd float64  // DurationEnd is a time in milliseconds which holds the time when the buff ends
-	BuffType    BuffType // BuffType is the type of buff, either percentIncrease or flatIncrease
-	Applied     bool
+	AdditionalDamage float64  // AdditionalDamage is the amount of damage increase the buff gives for each attack (ex. fluff tail)
+	DurationEnd      float64  // DurationEnd is a time in milliseconds which holds the time when the buff ends
+	BuffType         BuffType // BuffType is the type of buff, either percentIncrease or flatIncrease
+	Applied          bool
 }
 
-func (s StatBuff) Exists() bool {
-	return s != StatBuff{}
+func (s Buff) Exists() bool {
+	return s != Buff{}
 }
 
 // ToTypedStats converts the JsonStats struct to the internal use typed Stats struct
@@ -226,11 +227,15 @@ const (
 	Move2Buff       BuffName = "move2Buff"
 	UniteMoveBuff   BuffName = "uniteMoveBuff"
 	BasicAttackBuff BuffName = "basicAttackBuff"
+	BattleItemBuff  BuffName = "battleItemBuff"
+	HeldItem1Buff   BuffName = "heldItem1Buff"
+	HeldItem2Buff   BuffName = "heldItem2Buff"
+	HeldItem3Buff   BuffName = "heldItem3Buff"
 )
 
 // Buffs is a map of buffs applied on a pokemon
-type Buffs map[BuffName]StatBuff
+type Buffs map[BuffName]Buff
 
-func (b Buffs) AddBuff(buffName BuffName, buff StatBuff) {
+func (b Buffs) AddBuff(buffName BuffName, buff Buff) {
 	b[buffName] = buff
 }

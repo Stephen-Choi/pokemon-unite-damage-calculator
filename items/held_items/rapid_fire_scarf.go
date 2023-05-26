@@ -58,9 +58,9 @@ func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime floa
 	}
 
 	// Perform Rapid Fire Scarf effect
-	effect.UpdatedStats = stats.StatBuff{
+	effect.Buff = stats.Buff{
 		Stats: stats.Stats{
-			AttackSpeed: 0.3 * float64(originalStats.AttackSpeed),
+			AttackSpeed: 0.3,
 		},
 		DurationEnd: elapsedTime + item.SpecialEffect.Buff.Duration,
 	}
