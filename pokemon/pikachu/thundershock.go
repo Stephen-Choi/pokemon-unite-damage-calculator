@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
+	pokemonErrors "github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
@@ -23,7 +23,7 @@ type ThunderShock struct {
 func NewThunderShock(level int) (move *ThunderShock, err error) {
 	// Ensure moveset is valid for the current pokemon level
 	if level > thunderShockMaxLevel {
-		err = errors.New(pokemon.ErrInvalidMovesetForLevel)
+		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 

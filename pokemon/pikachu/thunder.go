@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 	"math"
 )
@@ -25,7 +25,7 @@ type Thunder struct {
 func NewThunder(level int) (move *Thunder, err error) {
 	// Ensure moveset is valid for the current pokemon level
 	if level < thunderMinLevel {
-		err = errors.New(pokemon.ErrInvalidMovesetForLevel)
+		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 

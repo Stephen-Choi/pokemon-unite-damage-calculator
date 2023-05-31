@@ -3,12 +3,16 @@ package pikachu
 import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/datafetcher"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	battleitems "github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/battle_items"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
 	stats "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 	"math"
+)
+
+const (
+	PikachuName = "pikachu"
 )
 
 type MoveName string
@@ -50,7 +54,7 @@ type Pikachu struct {
 
 func NewPikachu(level int, move1Name string, move2Name string, heldItems []helditems.HeldItem, battleItem battleitems.BattleItem, emblems *stats.Stats) (p *Pikachu, err error) {
 	// Get pokemon stats
-	pokemonStats, err := pokemon.FetchPokemonStats(pokemon.PikachuName, level)
+	pokemonStats, err := datafetcher.FetchPokemonStats(PikachuName, level)
 	if err != nil {
 		return
 	}
@@ -83,7 +87,7 @@ func NewPikachu(level int, move1Name string, move2Name string, heldItems []heldi
 	}
 
 	p = &Pikachu{
-		Name:                pokemon.PikachuName,
+		Name:                PikachuName,
 		Stats:               pokemonStats,
 		basicAttack:         NewBasicAttack(),
 		move1:               move1,
@@ -96,6 +100,10 @@ func NewPikachu(level int, move1Name string, move2Name string, heldItems []heldi
 	}
 
 	return
+}
+
+func (p *Pikachu) GetName() string {
+	return p.Name
 }
 
 func move1Exists(move string) bool {

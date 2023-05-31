@@ -1,4 +1,4 @@
-package pokemon
+package datafetcher
 
 import (
 	"encoding/json"
