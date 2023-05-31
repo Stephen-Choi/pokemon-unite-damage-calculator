@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 	"github.com/samber/lo"
 )
 
@@ -46,9 +47,9 @@ func (item *EnergyAmplifier) Activate(originalStats stats.Stats, elapsedTime flo
 
 	// Perform energy amplifier effect
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:     attack.PercentDamageBoost,
-		Amount:   1.21,
-		Duration: lo.ToPtr(item.SpecialEffect.Buff.Duration),
+		Type:        attack.PercentDamageBoost,
+		Amount:      0.21,
+		DurationEnd: lo.ToPtr(time.ConvertSecondsToMilliseconds(item.SpecialEffect.Buff.Duration) + elapsedTime),
 	}
 
 	// Put the held item on cooldown

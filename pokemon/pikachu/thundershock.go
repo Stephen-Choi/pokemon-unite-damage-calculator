@@ -44,7 +44,9 @@ func (move *ThunderShock) Activate(stats stats.Stats, enemyPokemon enemy.Pokemon
 	damage := 0.75*stats.SpecialAttack + 21*float64(stats.Level-1) + 390
 
 	result = attack.Result{
-		DamageDealt: damage,
+		AttackOption: attack.Move2,
+		AttackType:   attack.SpecialAttack,
+		DamageDealt:  damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

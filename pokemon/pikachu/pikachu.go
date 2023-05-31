@@ -8,6 +8,7 @@ import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
 	stats "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"math"
 )
 
 type MoveName string
@@ -35,8 +36,10 @@ var move2Set = []MoveName{
 
 // Pikachu is a pokemon
 type Pikachu struct {
+	Name string
 	stats.Stats
 	stats.Buffs
+	attack.AllAdditionalDamage
 	basicAttack attack.BasicAttack
 	move1       attack.SkillMove
 	move2       attack.SkillMove
@@ -45,11 +48,16 @@ type Pikachu struct {
 	BattleItem  battleitems.BattleItem
 }
 
-func NewPikachu(level int, move1Name string, move2Name string, heldItems []helditems.HeldItem, battleItem battleitems.BattleItem, emblems stats.Stats) (p *Pikachu, err error) {
+func NewPikachu(level int, move1Name string, move2Name string, heldItems []helditems.HeldItem, battleItem battleitems.BattleItem, emblems *stats.Stats) (p *Pikachu, err error) {
 	// Get pokemon stats
 	pokemonStats, err := pokemon.FetchPokemonStats(pokemon.PikachuName, level)
 	if err != nil {
 		return
+	}
+
+	// Apply held item stats
+	for _, heldItem := range heldItems {
+		pokemonStats.AddStats(heldItem.GetStatBoosts(pokemonStats))
 	}
 
 	// TODO: apply emblems
@@ -75,13 +83,16 @@ func NewPikachu(level int, move1Name string, move2Name string, heldItems []heldi
 	}
 
 	p = &Pikachu{
-		Stats:       pokemonStats,
-		basicAttack: NewBasicAttack(),
-		move1:       move1,
-		move2:       move2,
-		uniteMove:   NewThunderstorm(level),
-		HeldItems:   heldItems,
-		BattleItem:  battleItem,
+		Name:                pokemon.PikachuName,
+		Stats:               pokemonStats,
+		basicAttack:         NewBasicAttack(),
+		move1:               move1,
+		move2:               move2,
+		uniteMove:           NewThunderstorm(level),
+		HeldItems:           heldItems,
+		BattleItem:          battleItem,
+		Buffs:               stats.NewBuffs(),
+		AllAdditionalDamage: attack.NewAllAdditionalDamage(),
 	}
 
 	return
@@ -154,47 +165,68 @@ func (p *Pikachu) GetAvailableActions(elapsedTime float64) (availableAttacks []a
 
 // ActivateBattleItem attempts to activate the battle item
 func (p *Pikachu) ActivateBattleItem(elapsedTime float64) {
-	_, battleItemBuff, err := p.BattleItem.Activate(p.getStats(), elapsedTime)
+	_, battleItemEffect, err := p.BattleItem.Activate(p.getStats(elapsedTime), elapsedTime)
 	if err != nil {
 		return
 	}
 
-	if battleItemBuff.Exists() {
-		p.Buffs.AddBuff(stats.BattleItemBuff, battleItemBuff)
+	if battleItemEffect.Buff.Exists() {
+		p.Buffs.Add(stats.BattleItemBuff, battleItemEffect.Buff)
+	}
+	if battleItemEffect.AdditionalDamage.Exists() {
+		p.AllAdditionalDamage.Add(attack.BattleItemAdditionalDamage, battleItemEffect.AdditionalDamage)
 	}
 }
 
 // activateHeldItems attempts to activate held items
 // Note: since most held items are triggered automatically, no need to export this method. Can simply call it after an attack occurs
-func (p *Pikachu) activateHeldItems(attackResult attack.Result, elapsedTime float64) (result attack.Result, err error) {
+func (p *Pikachu) activateHeldItems(statsBeforeAttack stats.Stats, attackResult attack.Result, elapsedTime float64) (debuffs []attack.Debuff, err error) {
+	attackOption := attackResult.AttackOption
+	attackType := attackResult.AttackType
 
-	// TODO CONTINUE HERE...
-	result = attackResult
-
-	// IF A BUFF IS RETURNED, APPLY IT DIRECTLY HERE
-	for _, heldItem := range p.HeldItems {
-		_, heldItemBuff, err := heldItem.Activate(p.getStats(), elapsedTime)
+	// Default to the attack result, build on top of it
+	for index, heldItem := range p.HeldItems {
+		_, heldItemEffect, err := heldItem.Activate(statsBeforeAttack, elapsedTime, attackOption, attackType)
 		if err != nil {
-			return result, err
+			return nil, err
 		}
 
-		if heldItemBuff.Exists() {
-			p.Buffs.AddBuff(stats.HeldItemBuff, heldItemBuff)
+		// Apply any buffs that were granted from the held item
+		if heldItemEffect.Buff.Exists() {
+			p.Buffs.Add(stats.GetHeldItemName(index), heldItemEffect.Buff)
+		}
+
+		// Apply any additional damage that were granted from the held item
+		if heldItemEffect.AdditionalDamage.Exists() {
+			p.AllAdditionalDamage.Add(attack.GetAdditionalDamageName(index), heldItemEffect.AdditionalDamage)
+		}
+
+		// Add debuffs that are inflicted by held item to the enemy pokemon
+		if heldItemEffect.Debuff.Exists() {
+			debuff := heldItemEffect.Debuff
+			debuff.FromPokemon = p.Name
+			debuffs = append(debuffs, debuff)
 		}
 	}
 	return
 }
 
-func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
+// Attack performs an attack on an opposing pokemon
+// Note: Any buffs that are granted from the attack should not apply in this iteration of the attack. They should only
+// be available for the next attack (thus why we have a statsBeforeAttack var that is used everywhere that stats are needed).
+func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (finalResult attack.Result, err error) {
+	statsBeforeAttack := p.getStats(elapsedTime)
+
+	var attackResult attack.Result
 	switch attackOption {
 	case attack.BasicAttackOption:
-		result, err = p.basicAttack.Attack(p.getStats(), enemyPokemon, elapsedTime)
+		attackResult, err = p.basicAttack.Attack(statsBeforeAttack, enemyPokemon, elapsedTime)
 	case attack.Move1:
-		result, err = p.move1.Activate(p.getStats(), enemyPokemon, elapsedTime)
+		attackResult, err = p.move1.Activate(statsBeforeAttack, enemyPokemon, elapsedTime)
 	case attack.Move2:
-		result, err = p.move2.Activate(p.getStats(), enemyPokemon, elapsedTime)
+		attackResult, err = p.move2.Activate(statsBeforeAttack, enemyPokemon, elapsedTime)
 	case attack.UniteMove:
-		result, err = p.uniteMove.Activate(p.getStats(), enemyPokemon, elapsedTime)
+		attackResult, err = p.uniteMove.Activate(statsBeforeAttack, enemyPokemon, elapsedTime)
 	default:
 		err = errors.New("invalid attack option")
 	}
@@ -202,14 +234,32 @@ func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon,
 		return
 	}
 
-	if result.Buff.Exists() {
-		p.addBuff(attackOption, result.Buff)
+	// Add attack related buffs
+	if attackResult.Buff.Exists() {
+		p.addBuff(attackOption, attackResult.Buff)
+	}
+	// Add additional damage
+	if attackResult.AdditionalDamage.Exists() {
+		p.addAdditionalDamage(attackOption, attackResult.AdditionalDamage)
 	}
 
-	// Attempt to apply held item effects
-	result, err = p.activateHeldItems(result, elapsedTime)
+	// Apply held item effects
+	heldItemDebuffs, err := p.activateHeldItems(statsBeforeAttack, attackResult, elapsedTime)
 
-	// TODO APPLY DAMAGE BUFFS HERE...
+	// Set up the final result of the attack with all debuffs and additional damage applied
+	finalResult = attackResult
+
+	for _, debuff := range heldItemDebuffs {
+		finalResult.Debuffs = append(finalResult.Debuffs, debuff)
+	}
+
+	// Apply additional damage
+	p.AllAdditionalDamage.ClearExpiredDurationAdditionalDamage(elapsedTime)
+	totalAdditionalDamage := p.AllAdditionalDamage.Calculate(attackResult.DamageDealt, enemyPokemon.GetStats())
+	finalResult.DamageDealt += totalAdditionalDamage
+
+	// Round to 2 decimal places
+	finalResult.DamageDealt = math.Floor(finalResult.DamageDealt*100) / 100
 
 	return
 }
@@ -217,18 +267,32 @@ func (p *Pikachu) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon,
 func (p *Pikachu) addBuff(attackOption attack.Option, buff stats.Buff) {
 	switch attackOption {
 	case attack.BasicAttackOption:
-		p.Buffs.AddBuff(stats.BasicAttackBuff, buff)
+		p.Buffs.Add(stats.BasicAttackBuff, buff)
 	case attack.Move1:
-		p.Buffs.AddBuff(stats.Move1Buff, buff)
+		p.Buffs.Add(stats.Move1Buff, buff)
 	case attack.Move2:
-		p.Buffs.AddBuff(stats.Move2Buff, buff)
+		p.Buffs.Add(stats.Move2Buff, buff)
 	case attack.UniteMove:
-		p.Buffs.AddBuff(stats.UniteMoveBuff, buff)
+		p.Buffs.Add(stats.UniteMoveBuff, buff)
+	}
+}
+
+func (p *Pikachu) addAdditionalDamage(attackOption attack.Option, additionalDamage attack.AdditionalDamage) {
+	switch attackOption {
+	case attack.BasicAttackOption:
+		p.AllAdditionalDamage.Add(attack.BasicAttackAdditionalDamage, additionalDamage)
+	case attack.Move1:
+		p.AllAdditionalDamage.Add(attack.Move1AdditionalDamage, additionalDamage)
+	case attack.Move2:
+		p.AllAdditionalDamage.Add(attack.Move2AdditionalDamage, additionalDamage)
+	case attack.UniteMove:
+		p.AllAdditionalDamage.Add(attack.UniteMoveAdditionalDamage, additionalDamage)
 	}
 }
 
 // getStats returns the pokemon's stats with any buffs applied
-func (p *Pikachu) getStats() stats.Stats {
+func (p *Pikachu) getStats(elapsedTime float64) stats.Stats {
+	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
 	p.Stats.ApplyBuffs(p.Buffs)
 	return p.Stats
 }

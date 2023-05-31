@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 	"github.com/samber/lo"
 )
 
 // RazorClaw is a held item
 type RazorClaw struct {
 	HeldItemData
+	active   bool    // active is a boolean which is used to check if the item is currently active
 	lastUsed float64 // lastUsed is a time in milliseconds which is used to check if the item is on cooldown
 	used     bool    // used is a boolean which is used to check if the item has ever been used
 }
@@ -32,9 +34,14 @@ func (item *RazorClaw) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
+// TODO CHANGE THE COOLDOWN ON THIS TO BE APPLICALBE IF IT'S IN THE DURATION TIME...
 func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
-	// Skip if item activation is on cooldown
-	if item.isOnCooldown(elapsedTime) {
+	if !item.isActive(elapsedTime) {
+		item.active = false
+	}
+
+	// Skip if item activation is on cooldown and item is not currently active
+	if item.isOnCooldown(elapsedTime) && !item.active {
 		onCooldown = true
 		return
 	}
@@ -43,13 +50,13 @@ func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, 
 	if attackOption != attack.Move1 && attackOption != attack.Move2 {
 		return // early return, don't trigger cooldown
 	}
-
+	// CONTINUE HERE
 	// Perform Razor Claw effect
 	extraDamage := 20.0 + 0.5*float64(originalStats.Attack)
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:     attack.SimpleAdditionalDamage,
-		Amount:   extraDamage,
-		Duration: lo.ToPtr(item.SpecialEffect.AdditionalDamage.Duration),
+		Type:        attack.SimpleAdditionalDamage,
+		Amount:      extraDamage,
+		DurationEnd: lo.ToPtr(time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration + elapsedTime)),
 	}
 
 	// Put the held item on cooldown
@@ -58,11 +65,25 @@ func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, 
 	return
 }
 
+func (item *RazorClaw) isActive(elapsedTime float64) bool {
+	if !item.active {
+		return false
+	}
+
+	// If last used + item active duration is greater than current time, it means it's still in effect
+	if item.lastUsed+time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration) > elapsedTime {
+		return true
+	} else {
+		return false
+	}
+}
+
 // isOnCooldown checks if the battle item is on cooldown
 func (item *RazorClaw) isOnCooldown(elapsedTime float64) bool {
 	if !item.used {
 		return false
 	}
+
 	itemCooldown := item.SpecialEffect.AdditionalDamage.Cooldown
 	return item.lastUsed+itemCooldown > elapsedTime
 }

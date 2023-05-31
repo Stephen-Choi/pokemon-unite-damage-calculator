@@ -6,6 +6,7 @@ import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"math"
 )
 
 const (
@@ -45,6 +46,7 @@ func (move *Thunder) IsAvailable(elapsedTime float64) bool {
 func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
 	// Damage calculation
 	damagePerHit := 0.2*originalStats.SpecialAttack + 5*float64(originalStats.Level-1) + 210
+	damagePerHit = math.Floor(damagePerHit*100) / 100
 
 	// Overtime damage calculation
 	var damageFrequency float64
@@ -58,6 +60,8 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 	}
 
 	result = attack.Result{
+		AttackOption: attack.Move1,
+		AttackType:   attack.SpecialAttack,
 		OvertimeDamage: attack.OverTimeDamage{
 			Damage:          damagePerHit,
 			DamageFrequency: damageFrequency,

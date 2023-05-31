@@ -4,6 +4,7 @@ import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"math"
 )
 
 const (
@@ -41,8 +42,9 @@ func (move *Thunderstorm) IsAvailable(elapsedTime float64) bool {
 func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) { // Damage calculation
 	var damagePerHit float64
 	isEnemyWildPokemon := enemyPokemon.IsWild()
-	if isEnemyWildPokemon {
+	if !isEnemyWildPokemon {
 		damagePerHit = 0.49*originalStats.SpecialAttack + 10*float64(originalStats.Level-1) + 490
+		damagePerHit = math.Floor(damagePerHit*100) / 100
 	} else {
 		damagePerHit = 0 // Unite move only hits enemy players
 	}
@@ -55,6 +57,8 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 	uniteBuffDuration := 6000.0
 
 	result = attack.Result{
+		AttackOption: attack.UniteMove,
+		AttackType:   attack.SpecialAttack,
 		OvertimeDamage: attack.OverTimeDamage{
 			Damage:          damagePerHit,
 			DamageFrequency: damageFrequency,

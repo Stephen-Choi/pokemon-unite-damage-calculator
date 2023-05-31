@@ -43,7 +43,9 @@ func (move *Electroweb) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 	damage := 0.36*originalStats.SpecialAttack + 11*float64(originalStats.Level-1) + 350
 
 	result = attack.Result{
-		DamageDealt: damage,
+		AttackOption: attack.Move1,
+		AttackType:   attack.SpecialAttack,
+		DamageDealt:  damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

@@ -57,7 +57,9 @@ func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.
 	}
 
 	result = attack.Result{
-		DamageDealt: totalDamage,
+		AttackOption: attack.Move1,
+		AttackType:   attack.SpecialAttack,
+		DamageDealt:  totalDamage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	voltTackleCooldown     = 1000.0
+	voltTackleCooldown     = 10000.0
 	voltTackleLevelUpgrade = 13
 	voltTackleMinLevel     = 6
 )
@@ -51,7 +51,9 @@ func (move *VoltTackle) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 	damage := 0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140
 
 	result = attack.Result{
-		DamageDealt: damage,
+		AttackOption: attack.Move2,
+		AttackType:   attack.SpecialAttack,
+		DamageDealt:  damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

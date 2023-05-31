@@ -2,8 +2,10 @@ package battleitems
 
 import (
 	"fmt"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
+	"github.com/samber/lo"
 )
 
 // FluffyTail is a battle item that deals additional damage to a target for a short period of time
@@ -30,7 +32,7 @@ func NewFluffyTail() (fluffyTail *FluffyTail, err error) {
 }
 
 // Activate activates the battle item
-func (item *FluffyTail) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, buff stats.Buff, err error) {
+func (item *FluffyTail) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if !item.IsAvailable(elapsedTime) {
 		onCooldown = true
@@ -38,11 +40,15 @@ func (item *FluffyTail) Activate(originalStats stats.Stats, elapsedTime float64)
 	}
 
 	// Additional damage formula: 100% attack + 60% sp. attack + 10(level-1) + 100"
-	additionalDamage := 1.0*originalStats.Attack + 0.6*originalStats.SpecialAttack + 10.0*(float64(originalStats.Level-1)) + 100.0
+	damage := 1.0*originalStats.Attack + 0.6*originalStats.SpecialAttack + 10.0*(float64(originalStats.Level-1)) + 100.0
+	additionalDamage := attack.AdditionalDamage{
+		Type:        attack.SimpleAdditionalDamage,
+		Amount:      damage,
+		DurationEnd: lo.ToPtr(time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration) + elapsedTime),
+	}
 
-	buff = stats.Buff{
+	battleItemEffect = BattleItemEffect{
 		AdditionalDamage: additionalDamage,
-		DurationEnd:      time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration) + elapsedTime,
 	}
 
 	// Put the battle item on cooldown

@@ -24,17 +24,22 @@ func (ba *BasicAttack) Attack(originalStats stats.Stats, enemyPokemon enemy.Poke
 	}
 
 	var damage float64
+	var attackType attack.Type
 	if ba.boostedStack >= stacksNeededForBoostedBasicAttack {
 		damage = 0.38*originalStats.SpecialAttack + 10*float64(originalStats.Level-1) + 200
 		ba.resetStack() // reset boosted stack after using it
+		attackType = attack.SpecialAttack
 	} else {
 		damage = 1.00 * originalStats.Attack
 		ba.boostedStack++                                                             // add boosted stack
 		ba.boostedStackExpiry = elapsedTime + attack.BoostedStackDurationBeforeExpiry // update the boosted stack expiry
+		attackType = attack.PhysicalAttack
 	}
 
 	result = attack.Result{
-		DamageDealt: damage,
+		AttackOption: attack.BasicAttackOption,
+		AttackType:   attackType,
+		DamageDealt:  damage,
 	}
 	return
 }

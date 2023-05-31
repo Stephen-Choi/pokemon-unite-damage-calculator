@@ -27,7 +27,7 @@ func NewXAttack() (xAttack *XAttack, err error) {
 }
 
 // Activate activates the battle item
-func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, buff stats.Buff, err error) {
+func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if !item.IsAvailable(elapsedTime) {
 		onCooldown = true
@@ -36,7 +36,7 @@ func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (o
 
 	// Apply stat buffs
 	xAttackStatsBuff := item.SpecialEffect.StatsBuff
-	buff = stats.Buff{
+	buff := stats.Buff{
 		Stats: stats.Stats{
 			Attack:        xAttackStatsBuff.AttackBuff,
 			SpecialAttack: xAttackStatsBuff.SpecialAttackBuff,
@@ -44,6 +44,10 @@ func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (o
 		},
 		BuffType:    stats.PercentIncrease,
 		DurationEnd: elapsedTime + time.ConvertSecondsToMilliseconds(xAttackStatsBuff.Duration),
+	}
+
+	battleItemEffect = BattleItemEffect{
+		Buff: buff,
 	}
 
 	// Put the battle item on cooldown

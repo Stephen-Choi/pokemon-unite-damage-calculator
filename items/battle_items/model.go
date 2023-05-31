@@ -1,6 +1,9 @@
 package battleitems
 
-import "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+import (
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+)
 
 const (
 	FluffyTailName = "fluffy_tail"
@@ -22,9 +25,14 @@ func IsBattleItemPlayable(battleItemName string) bool {
 	return false
 }
 
+type BattleItemEffect struct {
+	Buff             stats.Buff
+	AdditionalDamage attack.AdditionalDamage
+}
+
 type BattleItem interface {
 	IsAvailable(elapsedTime float64) bool
-	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, buff stats.Buff, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error)
 }
 
 type StatsBuff struct {

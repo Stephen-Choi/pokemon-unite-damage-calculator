@@ -49,6 +49,19 @@ type Stats struct {
 	EnergyRate        float64 `json:"energy rate"`
 }
 
+func (s *Stats) AddStats(stats Stats) {
+	s.Hp += stats.Hp
+	s.Attack += stats.Attack
+	s.Defense += stats.Defense
+	s.SpecialAttack += stats.SpecialAttack
+	s.SpecialDefense += stats.SpecialDefense
+	s.AttackSpeed += stats.AttackSpeed
+	s.CriticalHitChance += stats.CriticalHitChance
+	s.CriticalHitDamage += stats.CriticalHitDamage
+	s.CooldownReduction += stats.CooldownReduction
+	s.EnergyRate += stats.EnergyRate
+}
+
 func (s *Stats) ApplyBuffs(buffs Buffs) {
 	for buffName, buff := range buffs {
 		if !buff.Applied {
@@ -134,10 +147,9 @@ const (
 
 type Buff struct {
 	Stats
-	AdditionalDamage float64  // AdditionalDamage is the amount of damage increase the buff gives for each attack (ex. fluff tail)
-	DurationEnd      float64  // DurationEnd is a time in milliseconds which holds the time when the buff ends
-	BuffType         BuffType // BuffType is the type of buff, either percentIncrease or flatIncrease
-	Applied          bool
+	DurationEnd float64  // DurationEnd is a time in milliseconds which holds the time when the buff ends
+	BuffType    BuffType // BuffType is the type of buff, either percentIncrease or flatIncrease
+	Applied     bool
 }
 
 func (s Buff) Exists() bool {
@@ -233,9 +245,26 @@ const (
 	HeldItem3Buff   BuffName = "heldItem3Buff"
 )
 
+func GetHeldItemName(index int) BuffName {
+	switch index {
+	case 0:
+		return HeldItem1Buff
+	case 1:
+		return HeldItem2Buff
+	case 2:
+		return HeldItem3Buff
+	default:
+		return ""
+	}
+}
+
 // Buffs is a map of buffs applied on a pokemon
 type Buffs map[BuffName]Buff
 
-func (b Buffs) AddBuff(buffName BuffName, buff Buff) {
+func NewBuffs() Buffs {
+	return make(Buffs)
+}
+
+func (b Buffs) Add(buffName BuffName, buff Buff) {
 	b[buffName] = buff
 }

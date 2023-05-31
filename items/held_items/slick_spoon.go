@@ -36,8 +36,9 @@ func (item *SlickSpoon) Activate(originalStats stats.Stats, elapsedTime float64,
 	}
 
 	effect.Debuff = attack.Debuff{
-		DebuffType: attack.IgnoreDefense,
-		Stats:      stats.Stats{SpecialDefense: -0.2},
+		DebuffEffect: attack.IgnoreDefenseForAttackingPokemon,
+		Stats:        stats.Stats{SpecialDefense: -0.2},
+		DebuffType:   attack.Percent,
 	}
 
 	return
