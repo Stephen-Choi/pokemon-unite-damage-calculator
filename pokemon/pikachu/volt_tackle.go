@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
+	pokemonErrors "github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
@@ -24,7 +24,7 @@ type VoltTackle struct {
 func NewVoltTackle(level int) (move *VoltTackle, err error) {
 	// Ensure moveset is valid for the current pokemon level
 	if level < voltTackleMinLevel {
-		err = errors.New(pokemon.ErrInvalidMovesetForLevel)
+		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 

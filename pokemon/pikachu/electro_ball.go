@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
@@ -24,7 +24,7 @@ type ElectroBall struct {
 func NewElectroBall(level int) (move *ElectroBall, err error) {
 	// Ensure moveset is valid for the current pokemon level
 	if level < electroBallMinLevel {
-		err = errors.New(pokemon.ErrInvalidMovesetForLevel)
+		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 

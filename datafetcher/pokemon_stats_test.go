@@ -1,10 +1,12 @@
-package pokemon
+package datafetcher
 
 import (
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
+// Copied over from pokemon package to avoid cyclical dependency
 const maxLevel = 15
 
 const (
@@ -117,20 +119,12 @@ var PlayablePokemons = []string{
 	WigglytuffName,
 }
 
-// IsPokemonPlayable checks if a pokemon is playable
-func IsPokemonPlayable(pokemonName string) bool {
-	for _, availablePokemon := range PlayablePokemons {
-		if pokemonName == availablePokemon {
-			return true
+// Test_fetchPokemonStats tests the FetchPokemonStats function
+func Test_fetchPokemonStats(t *testing.T) {
+	for _, playablePokemon := range PlayablePokemons {
+		for level := 1; level < maxLevel; level++ {
+			_, err := FetchPokemonStats(playablePokemon, level)
+			assert.NoError(t, err, fmt.Sprintf("failed fetching pokemon: %s at level : %d", playablePokemon, level))
 		}
 	}
-	return false
-}
-
-// Pokemon is an interface for all playable pokemon
-type Pokemon interface {
-	GetName() string
-	GetAvailableActions(elapsedTime float64) (availableAttacks []attack.Option, isBattleItemAvailable bool, err error) // Get the available actions for a pokemon
-	Attack(attack attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error)    // Get the attack dealt by a pokemon's attack and possible status effects
-	ActivateBattleItem(elapsedTime float64)                                                                            // Activate the pokemon's battle item
 }
