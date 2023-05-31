@@ -30,7 +30,7 @@ func testCooldown(t *testing.T, heldItem HeldItem, itemCooldown float64, attackO
 	assert.False(t, onCooldown)
 }
 
-// Test_cooldowns tests the cooldowns of all battle items
+// Test_cooldowns tests the time of all battle items
 func Test_cooldowns(t *testing.T) {
 	t.Run("ChoiceSpecs", func(t *testing.T) {
 		choiceSpecs, err := NewChoiceSpecs()
@@ -45,7 +45,7 @@ func Test_cooldowns(t *testing.T) {
 	t.Run("Muscle Band", func(t *testing.T) {
 		muscleBand, err := NewMuscleBand()
 		assert.NoError(t, err)
-		testCooldown(t, muscleBand, muscleBand.SpecialEffect.AdditionalDamage.InternalCooldown, attack.BasicAttack, attack.PhysicalAttack)
+		testCooldown(t, muscleBand, muscleBand.SpecialEffect.AdditionalDamage.InternalCooldown, attack.BasicAttackOption, attack.PhysicalAttack)
 	})
 	t.Run("Razor Claw", func(t *testing.T) {
 		razorClaw, err := NewRazorClaw()

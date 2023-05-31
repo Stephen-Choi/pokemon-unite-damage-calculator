@@ -34,5 +34,6 @@ func (a *SpecialAttackSpecs) GetStatBoosts(originalStats stats.Stats) (updatedSt
 }
 
 func (a *SpecialAttackSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
-	panic("Not implemented")
+	// Not damage related, simple return
+	return
 }

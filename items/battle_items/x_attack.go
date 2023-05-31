@@ -3,6 +3,7 @@ package battleitems
 import (
 	"fmt"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 )
 
 type XAttack struct {
@@ -26,20 +27,28 @@ func NewXAttack() (xAttack *XAttack, err error) {
 }
 
 // Activate activates the battle item
-func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, effect BattleItemEffect, err error) {
+func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	// Skip if item activation is on cooldown
-	if item.isOnCooldown(elapsedTime) {
+	if !item.IsAvailable(elapsedTime) {
 		onCooldown = true
 		return
 	}
 
 	// Apply stat buffs
-	updatedStats := originalStats
 	xAttackStatsBuff := item.SpecialEffect.StatsBuff
-	updatedStats.Attack *= 1.0 + xAttackStatsBuff.AttackBuff
-	updatedStats.SpecialAttack *= 1.0 + xAttackStatsBuff.SpecialAttackBuff
-	updatedStats.AttackSpeed += xAttackStatsBuff.AttackSpeedBuff
-	effect.UpdatedStats = updatedStats
+	buff := stats.Buff{
+		Stats: stats.Stats{
+			Attack:        xAttackStatsBuff.AttackBuff,
+			SpecialAttack: xAttackStatsBuff.SpecialAttackBuff,
+			AttackSpeed:   xAttackStatsBuff.AttackSpeedBuff,
+		},
+		BuffType:    stats.PercentIncrease,
+		DurationEnd: elapsedTime + time.ConvertSecondsToMilliseconds(xAttackStatsBuff.Duration),
+	}
+
+	battleItemEffect = BattleItemEffect{
+		Buff: buff,
+	}
 
 	// Put the battle item on cooldown
 	item.setLastUsed(elapsedTime)
@@ -47,13 +56,13 @@ func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (o
 	return
 }
 
-// isOnCooldown checks if the battle item is on cooldown
-func (item *XAttack) isOnCooldown(elapsedTime float64) bool {
+// IsAvailable checks if the battle item is available
+func (item *XAttack) IsAvailable(elapsedTime float64) bool {
 	if !item.used {
-		return false
+		return true
 	}
 
-	return item.lastUsed+item.Cooldown > elapsedTime
+	return item.lastUsed+item.Cooldown <= elapsedTime
 }
 
 // setLastUsed sets the lastUsed time to now

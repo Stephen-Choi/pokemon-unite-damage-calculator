@@ -30,5 +30,6 @@ func (a *FloatStone) GetStatBoosts(originalStats stats.Stats) (updatedStats stat
 }
 
 func (a *FloatStone) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
-	panic("Not implemented")
+	// Not damage related, simple return
+	return
 }
