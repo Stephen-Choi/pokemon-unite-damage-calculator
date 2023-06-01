@@ -58,14 +58,14 @@ func Test_NewPikachu(t *testing.T) {
 		// Assert moves are as expected
 		electroBall, err := NewElectroBall(level)
 		assert.NoError(t, err)
-		assert.Equal(t, electroBall, pikachu.move1)
+		assert.Equal(t, electroBall, pikachu.Move1)
 
 		voltTackle, err := NewVoltTackle(level)
 		assert.NoError(t, err)
-		assert.Equal(t, voltTackle, pikachu.move2)
+		assert.Equal(t, voltTackle, pikachu.Move2)
 
 		thunderstorm := NewThunderstorm(level)
-		assert.Equal(t, thunderstorm, pikachu.uniteMove)
+		assert.Equal(t, thunderstorm, pikachu.UniteMove)
 
 		// Assert buffs and additionalDamage are empty
 		assert.Equal(t, stats.NewBuffs(), pikachu.Buffs)
