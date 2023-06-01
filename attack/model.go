@@ -188,3 +188,52 @@ type SkillMove interface {
 	IsAvailable(elapsedTime float64) bool                                                                           // Check if the skill move is on cooldown
 	Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
 }
+
+// GetFramesDelayForAttackSpeed returns the number of frames to wait before attacking (for basic attack) again based on a pokemon's attack speed
+func GetFramesDelayForAttackSpeed(attackSpeed float64) int {
+	var attackSpeedKey float64
+	var foundAttackSpeedKey bool
+	for idx, key := range AttackSpeedBucketsKeys {
+		if attackSpeed <= key {
+			attackSpeedKey = AttackSpeedBucketsKeys[int(math.Max(0, float64(idx-1)))] // Get the prev attack speed bucket
+			foundAttackSpeedKey = true
+			break
+		}
+	}
+	if !foundAttackSpeedKey {
+		return 16 // Max attack speed
+	}
+	return AttackSpeedBuckets[attackSpeedKey]
+}
+
+// AttackSpeedBuckets is a map of attack speed to correlated number of frames to wait before attacking again
+// Note: this data is retrieved from this doc: https://docs.google.com/document/d/e/2PACX-1vRM5xkImerqzZoaJhJfMY4dAY3TcsXwtynlvMZhGxXDPVUMMsNNwbhDKiCq1XigZ8zMlE16jierGbnE/pub
+var AttackSpeedBuckets = map[float64]int{
+	0.0:    60,
+	8.1:    56,
+	16.42:  52,
+	26.11:  48,
+	37.56:  44,
+	51.29:  40,
+	68.05:  36,
+	89.04:  32,
+	115.99: 28,
+	151.81: 24,
+	202.04: 20,
+	272.51: 16,
+}
+
+var AttackSpeedBucketsKeys = []float64{
+	0.0,
+	8.1,
+	16.42,
+	26.11,
+	37.56,
+	51.29,
+	68.05,
+	89.04,
+	115.99,
+	151.81,
+	202.04,
+	272.51,
+}
