@@ -35,6 +35,10 @@ func NewElectroBall(level int) (move *ElectroBall, err error) {
 	return
 }
 
+func (move *ElectroBall) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *ElectroBall) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true

@@ -45,6 +45,7 @@ type Debuff struct {
 	DebuffType   DebuffType
 	stats.Stats
 	FromPokemon string // fromPokemon is the name of the pokemon that applied the debuff
+	DurationEnd float64
 }
 
 func (d Debuff) Exists() bool {
@@ -156,6 +157,7 @@ func (a AllAdditionalDamage) ClearExpiredDurationAdditionalDamage(elapsedTime fl
 type OverTimeDamage struct {
 	Damage          float64
 	DamageFrequency float64 // time in milliseconds to apply the damage
+	DurationStart   float64 // time in milliseconds when the overtime damage should start
 	DurationEnd     float64 // time in milliseconds when the overtime damage should end
 }
 
@@ -185,6 +187,7 @@ type BasicAttack interface {
 }
 
 type SkillMove interface {
+	CanCriticallyHit() bool
 	IsAvailable(elapsedTime float64) bool                                                                           // Check if the skill move is on cooldown
 	Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
 }

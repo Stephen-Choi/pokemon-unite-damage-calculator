@@ -36,6 +36,10 @@ func NewThunder(level int) (move *Thunder, err error) {
 	return
 }
 
+func (move *Thunder) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *Thunder) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true
@@ -65,6 +69,7 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 		OvertimeDamage: attack.OverTimeDamage{
 			Damage:          damagePerHit,
 			DamageFrequency: damageFrequency,
+			DurationStart:   elapsedTime,
 			DurationEnd:     elapsedTime + moveDuration,
 		},
 	}

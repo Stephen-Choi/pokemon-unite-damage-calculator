@@ -27,6 +27,24 @@ func (p *GeneralPokemon) GetName() string {
 	return p.Name
 }
 
+func (p *GeneralPokemon) GetMovesThatCanCrit() (movesThatCanCrit []attack.Option) {
+	// Basic attacks can always crit
+	movesThatCanCrit = []attack.Option{
+		attack.BasicAttackOption,
+	}
+
+	if p.Move1.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.Move1)
+	}
+	if p.Move2.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.Move2)
+	}
+	if p.UniteMove.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.UniteMove)
+	}
+	return
+}
+
 func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAttacks []attack.Option, isBattleItemAvailable bool, err error) {
 	// Basic attacks are always available
 	availableAttacks = []attack.Option{
@@ -177,8 +195,8 @@ func (p *GeneralPokemon) addAdditionalDamage(attackOption attack.Option, additio
 	}
 }
 
-// getStats returns the pokemon's stats with any buffs applied
-func (p *GeneralPokemon) getStats(elapsedTime float64) stats.Stats {
+// GetStats returns the pokemon's stats with any buffs applied
+func (p *GeneralPokemon) GetStats(elapsedTime float64) stats.Stats {
 	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
 	p.Stats.ApplyBuffs(p.Buffs)
 	return p.Stats

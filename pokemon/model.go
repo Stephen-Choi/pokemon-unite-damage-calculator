@@ -3,6 +3,7 @@ package pokemon
 import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
 const maxLevel = 15
@@ -132,5 +133,7 @@ type Pokemon interface {
 	GetName() string
 	GetAvailableActions(elapsedTime float64) (availableAttacks []attack.Option, isBattleItemAvailable bool, err error) // Get the available actions for a pokemon
 	Attack(attack attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error)    // Get the attack dealt by a pokemon's attack and possible status effects
-	ActivateBattleItem(elapsedTime float64)                                                                            // Activate the pokemon's battle item
+	GetMovesThatCanCrit() []attack.Option                                                                              // Get the list of moves that can crit
+	ActivateBattleItem(elapsedTime float64)
+	GetStats(elapsedTime float64) stats.Stats
 }

@@ -35,6 +35,10 @@ func NewThunderbolt(level int) (move *Thunderbolt, err error) {
 	return
 }
 
+func (move *Thunderbolt) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *Thunderbolt) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true

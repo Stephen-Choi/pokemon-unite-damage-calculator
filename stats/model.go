@@ -243,6 +243,7 @@ const (
 	HeldItem1Buff   BuffName = "heldItem1Buff"
 	HeldItem2Buff   BuffName = "heldItem2Buff"
 	HeldItem3Buff   BuffName = "heldItem3Buff"
+	TeamBuff        BuffName = "teamBuff" // Team buff is a buff applied by a teammate TODO not utilized yet...
 )
 
 func GetHeldItemName(index int) BuffName {

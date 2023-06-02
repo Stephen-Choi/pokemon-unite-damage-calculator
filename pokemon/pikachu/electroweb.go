@@ -32,6 +32,10 @@ func NewElectroweb(level int) (move *Electroweb, err error) {
 	return
 }
 
+func (move *Electroweb) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *Electroweb) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true
