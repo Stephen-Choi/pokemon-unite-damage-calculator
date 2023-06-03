@@ -166,16 +166,26 @@ func (o OverTimeDamage) Exists() bool {
 	return o != OverTimeDamage{}
 }
 
+type ExecutePercentDamage struct {
+	Percent      float64
+	CappedDamage float64
+}
+
+func (e ExecutePercentDamage) Exists() bool {
+	return e != ExecutePercentDamage{}
+}
+
 // Result is the result of an attack
 type Result struct {
-	AttackType       Type
-	AttackOption     Option
-	DamageDealt      float64
-	OvertimeDamage   OverTimeDamage
-	AdditionalDamage AdditionalDamage
-	Buff             stats.Buff
-	Debuffs          []Debuff
-	AttackDuration   float64 // time in milliseconds that the attack took to complete TODO: set this for all moves if ever someone gets the frame data for each move
+	AttackType             Type
+	AttackOption           Option
+	DamageDealt            float64
+	OvertimeDamage         OverTimeDamage
+	AdditionalDamage       AdditionalDamage
+	Buff                   stats.Buff
+	Debuffs                []Debuff
+	AttackDuration         float64 // time in milliseconds that the attack took to complete TODO: set this for all moves if ever someone gets the frame data for each move
+	ExecutionPercentDamage ExecutePercentDamage
 }
 
 // CoolDowns is a struct containing the time of a pokemon's attacks

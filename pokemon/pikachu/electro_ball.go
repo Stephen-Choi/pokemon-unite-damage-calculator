@@ -6,7 +6,6 @@ import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
-	"math"
 )
 
 const (
@@ -48,23 +47,24 @@ func (move *ElectroBall) IsAvailable(elapsedTime float64) bool {
 }
 
 func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	enemyStats := enemyPokemon.GetStats()
-
-	var totalDamage float64
+	var damage float64
+	var executionPercent float64
 	if !move.isUpgraded {
-		baseDamage := 0.66*originalStats.SpecialAttack + 25*float64(originalStats.Level-1) + 530
-		executionDamage := math.Min(1200.0, 0.04*enemyStats.Hp) // Additional execution damage, capped at 1200
-		totalDamage = baseDamage + executionDamage
+		damage = 0.66*originalStats.SpecialAttack + 25*float64(originalStats.Level-1) + 530
+		executionPercent = 0.04
 	} else {
-		baseDamage := 0.77*originalStats.SpecialAttack + 29*float64(originalStats.Level-1) + 640
-		executionDamage := math.Min(1200.0, 0.05*enemyStats.Hp) // Additional execution damage, capped at 1200
-		totalDamage = baseDamage + executionDamage
+		damage = 0.77*originalStats.SpecialAttack + 29*float64(originalStats.Level-1) + 640
+		executionPercent = 0.05
 	}
 
 	result = attack.Result{
 		AttackOption: attack.Move1,
 		AttackType:   attack.SpecialAttack,
-		DamageDealt:  totalDamage,
+		DamageDealt:  damage,
+		ExecutionPercentDamage: attack.ExecutePercentDamage{
+			Percent:      executionPercent,
+			CappedDamage: 1200,
+		},
 	}
 	move.setLastUsed(elapsedTime)
 	return
