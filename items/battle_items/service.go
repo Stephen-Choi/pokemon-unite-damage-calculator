@@ -14,6 +14,8 @@ func GetBattleItem(battleItemName string) (battleItem BattleItem, err error) {
 		battleItem, err = NewFluffyTail()
 	case XAttackName:
 		battleItem, err = NewXAttack()
+	default:
+		battleItem = NewNonDamagingItem()
 	}
 	return
 }

@@ -51,6 +51,7 @@ func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokem
 		attackingPokemonTeamBuff:  teamBuffs,
 		enemyPokemon:              enemyPokemon,
 		attacksThatCanCrit:        attacksThatCanCrit,
+		overtimeDamageByPokemon:   make(map[string][]attack.OverTimeDamage),
 		timeOfNextAvailableAction: make(map[string]float64),
 	}
 }
@@ -58,12 +59,17 @@ func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokem
 // CalculateRip calculates how long it takes to defeat an enemy pokemon
 // NOTE: assumes enemy will not attack and defeat any of the attacking pokemon
 // TODO: set up an algorithm to determine the best course of action to achieve the most efficient rip
-func (d *DamageCalculator) CalculateRip() Result {
+func (d *DamageCalculator) CalculateRip() (Result, error) {
 	// Set up state log to capture all states during the rip calculation
 	stateLog := make(StateLog)
 
 	// Keep calculating until the enemy is defeated
 	for !d.enemyPokemon.IsDefeated() {
+		// Elapse time (skip first iteration)
+		if len(stateLog) != 0 {
+			d.elapseTime()
+		}
+
 		// Set up new state for the state log
 		state := State{
 			PokemonActions: make(map[string]attack.Option),
@@ -76,6 +82,7 @@ func (d *DamageCalculator) CalculateRip() Result {
 
 			// Check if the pokemon can act
 			if !d.canPokemonAct(attackingPokemonName) {
+				state.PokemonActions[attackingPokemonName] = attack.CannotAct
 				continue
 			}
 
@@ -112,13 +119,13 @@ func (d *DamageCalculator) CalculateRip() Result {
 
 			// Check for crit
 			if d.shouldCrit(attackingPokemon.GetName(), bestAction, d.elapsedTime) {
-				critDamage := attackingPokemon.GetStats().CriticalHitDamage
+				critDamage := attackingPokemon.GetStats(d.elapsedTime).CriticalHitDamage
 				attackResult.DamageDealt = attackResult.DamageDealt * critDamage // Applies crit damage
 			}
 
 			// Determine damage to be taken by enemy
 			totalDamageDealt := attackResult.DamageDealt + overtimeDamageForPokemon
-			enemyStatsAfterDebuffs := enemy.ApplyDebuffs(attackingPokemonName, d.enemyPokemon, d.inflictedDebuffs)
+			enemyStatsAfterDebuffs := attack.ApplyDebuffs(attackingPokemonName, d.enemyPokemon, d.inflictedDebuffs)
 			damageTakenByEnemy := calculateDamageTaken(totalDamageDealt, enemyStatsAfterDebuffs, attackResult.AttackType)
 
 			// Update enemy health
@@ -144,7 +151,7 @@ func (d *DamageCalculator) CalculateRip() Result {
 	return Result{
 		StateLog:  stateLog,
 		TotalTime: d.elapsedTime,
-	}
+	}, nil
 }
 
 // setActionDelay sets the delay for the next action for the attacking pokemon
@@ -174,7 +181,7 @@ func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackRes
 }
 
 func (d *DamageCalculator) canPokemonAct(pokemonName string) bool {
-	return d.timeOfNextAvailableAction[pokemonName] >= d.elapsedTime
+	return d.timeOfNextAvailableAction[pokemonName] <= d.elapsedTime
 }
 
 // determineBestAction determines the best action to take given the available attacks

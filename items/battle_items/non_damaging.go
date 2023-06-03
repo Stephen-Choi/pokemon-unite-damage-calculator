@@ -4,7 +4,11 @@ import "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 
 type NonDamagingItem struct{}
 
-func (item NonDamagingItem) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, buff stats.Buff, err error) {
+func NewNonDamagingItem() *NonDamagingItem {
+	return &NonDamagingItem{}
+}
+
+func (item NonDamagingItem) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	return // do nothing
 }
 

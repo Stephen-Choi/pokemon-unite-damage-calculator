@@ -8,11 +8,23 @@ import (
 const (
 	FluffyTailName = "fluffy_tail"
 	XAttackName    = "x_attack"
+	EjectButton    = "eject_button"
+	FullHeal       = "full_heal"
+	GoalGetter     = "goal_getter"
+	Potion         = "potion"
+	SlowSmoke      = "slow_smoke"
+	XSpeed         = "x_speed"
 )
 
 var playableBattleItems = []string{
 	FluffyTailName,
 	XAttackName,
+	EjectButton,
+	FullHeal,
+	GoalGetter,
+	Potion,
+	SlowSmoke,
+	XSpeed,
 }
 
 // IsBattleItemPlayable checks if the given battle item exists in game

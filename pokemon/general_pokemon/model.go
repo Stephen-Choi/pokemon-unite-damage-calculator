@@ -63,7 +63,9 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 	}
 
 	// Check if battle item is available
-	isBattleItemAvailable = p.BattleItem.IsAvailable(elapsedTime)
+	if p.BattleItem != nil {
+		isBattleItemAvailable = p.BattleItem.IsAvailable(elapsedTime)
+	}
 
 	return
 }
