@@ -128,8 +128,22 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			enemyStatsAfterDebuffs := attack.ApplyDebuffs(attackingPokemonName, d.enemyPokemon, d.inflictedDebuffs)
 			damageTakenByEnemy := calculateDamageTaken(totalDamageDealt, enemyStatsAfterDebuffs, attackResult.AttackType)
 
-			// Update enemy health
+			// Apply damage to enemy's health
 			d.enemyPokemon.ApplyDamage(damageTakenByEnemy)
+
+			// Apply any execution damage if required (applies after damage is dealt from the move)
+			// Ref on how to calculate execution damage: https://unite-db.com/faq/elementary-mechanics#Missing-HP
+			if attackResult.ExecutionPercentDamage.Exists() {
+				var executionDamage float64
+				if attackResult.ExecutionPercentDamage.CappedDamage != 0 {
+					executionDamage = math.Min(d.enemyPokemon.GetRemainingHealth()*attackResult.ExecutionPercentDamage.Percent, attackResult.ExecutionPercentDamage.CappedDamage)
+				} else {
+					executionDamage = d.enemyPokemon.GetRemainingHealth() * attackResult.ExecutionPercentDamage.Percent
+				}
+
+				executionDamageTakenByEnemy := calculateDamageTaken(executionDamage, enemyStatsAfterDebuffs, attackResult.AttackType)
+				d.enemyPokemon.ApplyDamage(executionDamageTakenByEnemy)
+			}
 
 			// Update state log for this pokemon
 			state.PokemonActions[attackingPokemonName] = bestAction
