@@ -70,7 +70,7 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 
 // ActivateBattleItem attempts to activate the battle item
 func (p *GeneralPokemon) ActivateBattleItem(elapsedTime float64) {
-	_, battleItemEffect, err := p.BattleItem.Activate(p.getStats(elapsedTime), elapsedTime)
+	_, battleItemEffect, err := p.BattleItem.Activate(p.GetStats(elapsedTime), elapsedTime)
 	if err != nil {
 		return
 	}
@@ -120,7 +120,7 @@ func (p *GeneralPokemon) activateHeldItems(statsBeforeAttack stats.Stats, attack
 // Note: Any buffs that are granted from the attack should not apply in this iteration of the attack. They should only
 // be available for the next attack (thus why we have a statsBeforeAttack var that is used everywhere that stats are needed).
 func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (finalResult attack.Result, err error) {
-	statsBeforeAttack := p.getStats(elapsedTime)
+	statsBeforeAttack := p.GetStats(elapsedTime)
 
 	var attackResult attack.Result
 	switch attackOption {
@@ -200,4 +200,10 @@ func (p *GeneralPokemon) GetStats(elapsedTime float64) stats.Stats {
 	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
 	p.Stats.ApplyBuffs(p.Buffs)
 	return p.Stats
+}
+
+// GetBuffs returns the buffs currently applied on the pokemon
+func (p *GeneralPokemon) GetBuffs(elapsedTime float64) stats.Buffs {
+	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
+	return p.Buffs
 }

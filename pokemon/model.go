@@ -136,4 +136,5 @@ type Pokemon interface {
 	GetMovesThatCanCrit() []attack.Option                                                                              // Get the list of moves that can crit
 	ActivateBattleItem(elapsedTime float64)
 	GetStats(elapsedTime float64) stats.Stats
+	GetBuffs(elapsedTime float64) stats.Buffs
 }

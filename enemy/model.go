@@ -8,6 +8,9 @@ import (
 type Pokemon interface {
 	IsWild() bool
 	GetStats() stats.Stats
+	IsDefeated() bool
+	ApplyDamage(damageTaken float64)
+	GetRemainingHealth() float64
 }
 
 type DefaultEnemy struct {
@@ -21,6 +24,18 @@ func (enemy DefaultEnemy) IsWild() bool {
 
 func (enemy DefaultEnemy) GetStats() stats.Stats {
 	return enemy.stats
+}
+
+func (enemy DefaultEnemy) IsDefeated() bool {
+	return enemy.stats.Hp <= 0
+}
+
+func (enemy DefaultEnemy) GetRemainingHealth() float64 {
+	return enemy.stats.Hp
+}
+
+func (enemy DefaultEnemy) ApplyDamage(damageTaken float64) {
+	enemy.stats.Hp -= damageTaken
 }
 
 // ApplyDebuffs applies debuffs to the enemy pokemon for a specific attacking pokemon

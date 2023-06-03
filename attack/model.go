@@ -161,6 +161,10 @@ type OverTimeDamage struct {
 	DurationEnd     float64 // time in milliseconds when the overtime damage should end
 }
 
+func (o OverTimeDamage) Exists() bool {
+	return o != OverTimeDamage{}
+}
+
 // Result is the result of an attack
 type Result struct {
 	AttackType       Type
@@ -170,6 +174,7 @@ type Result struct {
 	AdditionalDamage AdditionalDamage
 	Buff             stats.Buff
 	Debuffs          []Debuff
+	AttackDuration   float64 // time in milliseconds that the attack took to complete TODO: set this for all moves if ever someone gets the frame data for each move
 }
 
 // CoolDowns is a struct containing the time of a pokemon's attacks
@@ -183,6 +188,7 @@ type CoolDowns struct {
 const BoostedStackDurationBeforeExpiry = 4000.0
 
 type BasicAttack interface {
+	// TODO: Add a setBoostedStacks method since some skills lead to boosted autos
 	Attack(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Get the attack dealt by a pokemon's basic attack and possible status effects
 }
 
@@ -192,8 +198,8 @@ type SkillMove interface {
 	Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
 }
 
-// GetFramesDelayForAttackSpeed returns the number of frames to wait before attacking (for basic attack) again based on a pokemon's attack speed
-func GetFramesDelayForAttackSpeed(attackSpeed float64) int {
+// GetDelayForAttackSpeed returns the time delay to wait before attacking (for basic attack) again based on a pokemon's attack speed
+func GetDelayForAttackSpeed(attackSpeed float64) float64 {
 	var attackSpeedKey float64
 	var foundAttackSpeedKey bool
 	for idx, key := range AttackSpeedBucketsKeys {
@@ -203,10 +209,15 @@ func GetFramesDelayForAttackSpeed(attackSpeed float64) int {
 			break
 		}
 	}
+	var frameDelay int
 	if !foundAttackSpeedKey {
-		return 16 // Max attack speed
+		frameDelay = 16 // Max attack speed
+	} else {
+		frameDelay = AttackSpeedBuckets[attackSpeedKey]
 	}
-	return AttackSpeedBuckets[attackSpeedKey]
+
+	// Every 4 frames occurs in 66.67 milliseconds
+	return float64(frameDelay) / 4 * 66.67
 }
 
 // AttackSpeedBuckets is a map of attack speed to correlated number of frames to wait before attacking again
