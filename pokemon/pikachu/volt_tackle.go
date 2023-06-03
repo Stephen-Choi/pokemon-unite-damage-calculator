@@ -40,6 +40,10 @@ func NewVoltTackle(level int) (move *VoltTackle, err error) {
 	return
 }
 
+func (move *VoltTackle) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *VoltTackle) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true

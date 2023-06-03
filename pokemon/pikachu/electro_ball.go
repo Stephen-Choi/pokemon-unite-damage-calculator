@@ -6,6 +6,7 @@ import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemonErrors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"math"
 )
 
 const (
@@ -35,6 +36,10 @@ func NewElectroBall(level int) (move *ElectroBall, err error) {
 	return
 }
 
+func (move *ElectroBall) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *ElectroBall) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true
@@ -48,11 +53,11 @@ func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.
 	var totalDamage float64
 	if !move.isUpgraded {
 		baseDamage := 0.66*originalStats.SpecialAttack + 25*float64(originalStats.Level-1) + 530
-		executionDamage := 0.04 * enemyStats.Hp // Additional execution damage
+		executionDamage := math.Min(1200.0, 0.04*enemyStats.Hp) // Additional execution damage, capped at 1200
 		totalDamage = baseDamage + executionDamage
 	} else {
 		baseDamage := 0.77*originalStats.SpecialAttack + 29*float64(originalStats.Level-1) + 640
-		executionDamage := 0.05 * enemyStats.Hp // Additional execution damage
+		executionDamage := math.Min(1200.0, 0.05*enemyStats.Hp) // Additional execution damage, capped at 1200
 		totalDamage = baseDamage + executionDamage
 	}
 

@@ -33,6 +33,10 @@ func NewThunderShock(level int) (move *ThunderShock, err error) {
 	return
 }
 
+func (move *ThunderShock) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *ThunderShock) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true

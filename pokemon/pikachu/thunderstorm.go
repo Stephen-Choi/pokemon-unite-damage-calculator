@@ -27,6 +27,10 @@ func NewThunderstorm(level int) (move *Thunderstorm) {
 	return
 }
 
+func (move *Thunderstorm) CanCriticallyHit() bool {
+	return false
+}
+
 func (move *Thunderstorm) IsAvailable(elapsedTime float64) bool {
 	// Unite move is unlocked at level 9
 	if move.pokemonLevel < thunderstormMinLevel {
@@ -62,6 +66,7 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 		OvertimeDamage: attack.OverTimeDamage{
 			Damage:          damagePerHit,
 			DamageFrequency: damageFrequency,
+			DurationStart:   elapsedTime,
 			DurationEnd:     elapsedTime + moveDuration,
 		},
 		Buff: stats.Buff{

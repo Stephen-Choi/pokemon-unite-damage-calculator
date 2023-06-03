@@ -23,6 +23,7 @@ const (
 	UniteMove              Option = "uniteMove"
 	BasicAttackOption      Option = "basicAttack"
 	CriticalHitBasicAttack Option = "criticalHitBasicAttack"
+	CannotAct              Option = "cannotAct" // still in attack animation or attack lag
 )
 
 // DebuffEffect is an enum for the different types of status conditions a pokemon can inflict
@@ -45,6 +46,7 @@ type Debuff struct {
 	DebuffType   DebuffType
 	stats.Stats
 	FromPokemon string // fromPokemon is the name of the pokemon that applied the debuff
+	DurationEnd float64
 }
 
 func (d Debuff) Exists() bool {
@@ -156,7 +158,12 @@ func (a AllAdditionalDamage) ClearExpiredDurationAdditionalDamage(elapsedTime fl
 type OverTimeDamage struct {
 	Damage          float64
 	DamageFrequency float64 // time in milliseconds to apply the damage
+	DurationStart   float64 // time in milliseconds when the overtime damage should start
 	DurationEnd     float64 // time in milliseconds when the overtime damage should end
+}
+
+func (o OverTimeDamage) Exists() bool {
+	return o != OverTimeDamage{}
 }
 
 // Result is the result of an attack
@@ -168,6 +175,7 @@ type Result struct {
 	AdditionalDamage AdditionalDamage
 	Buff             stats.Buff
 	Debuffs          []Debuff
+	AttackDuration   float64 // time in milliseconds that the attack took to complete TODO: set this for all moves if ever someone gets the frame data for each move
 }
 
 // CoolDowns is a struct containing the time of a pokemon's attacks
@@ -181,16 +189,18 @@ type CoolDowns struct {
 const BoostedStackDurationBeforeExpiry = 4000.0
 
 type BasicAttack interface {
+	// TODO: Add a setBoostedStacks method since some skills lead to boosted autos
 	Attack(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Get the attack dealt by a pokemon's basic attack and possible status effects
 }
 
 type SkillMove interface {
+	CanCriticallyHit() bool
 	IsAvailable(elapsedTime float64) bool                                                                           // Check if the skill move is on cooldown
 	Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
 }
 
-// GetFramesDelayForAttackSpeed returns the number of frames to wait before attacking (for basic attack) again based on a pokemon's attack speed
-func GetFramesDelayForAttackSpeed(attackSpeed float64) int {
+// GetDelayForAttackSpeed returns the time delay to wait before attacking (for basic attack) again based on a pokemon's attack speed
+func GetDelayForAttackSpeed(attackSpeed float64) float64 {
 	var attackSpeedKey float64
 	var foundAttackSpeedKey bool
 	for idx, key := range AttackSpeedBucketsKeys {
@@ -200,10 +210,15 @@ func GetFramesDelayForAttackSpeed(attackSpeed float64) int {
 			break
 		}
 	}
+	var frameDelay int
 	if !foundAttackSpeedKey {
-		return 16 // Max attack speed
+		frameDelay = 16 // Max attack speed
+	} else {
+		frameDelay = AttackSpeedBuckets[attackSpeedKey]
 	}
-	return AttackSpeedBuckets[attackSpeedKey]
+
+	// Every 4 frames occurs in 66.67 milliseconds
+	return float64(frameDelay) / 4 * 66.67
 }
 
 // AttackSpeedBuckets is a map of attack speed to correlated number of frames to wait before attacking again
@@ -236,4 +251,34 @@ var AttackSpeedBucketsKeys = []float64{
 	151.81,
 	202.04,
 	272.51,
+}
+
+// ApplyDebuffs applies debuffs to the enemy pokemon for a specific attacking pokemon
+// This needs to occur on a per pokemon basis since a pokemon can have debuff effects that only apply for itself (ex. slick spoon)
+func ApplyDebuffs(attackingPokemon string, enemy enemy.Pokemon, debuffs []Debuff) (enemyStats stats.Stats) {
+	enemyStats = enemy.GetStats()
+
+	// Debuffs apply additively
+	debuffStats := stats.Stats{}
+
+	for _, debuff := range debuffs {
+		switch debuff.DebuffEffect {
+		case IgnoreDefenseForAttackingPokemon:
+			if attackingPokemon == debuff.FromPokemon {
+				debuffStats.SpecialDefense += debuff.Stats.SpecialDefense
+			}
+		}
+	}
+
+	enemyStats.Hp *= 1 - debuffStats.Hp
+	enemyStats.Attack *= 1 - debuffStats.Attack
+	enemyStats.Defense *= 1 - debuffStats.Defense
+	enemyStats.SpecialAttack *= 1 - debuffStats.SpecialAttack
+	enemyStats.SpecialDefense *= 1 - debuffStats.SpecialDefense
+	enemyStats.AttackSpeed *= 1 - debuffStats.AttackSpeed
+	enemyStats.CriticalHitChance *= 1 - debuffStats.CriticalHitChance
+	enemyStats.CriticalHitDamage *= 1 - debuffStats.CriticalHitDamage
+	enemyStats.CooldownReduction *= 1 - debuffStats.CooldownReduction
+	enemyStats.EnergyRate *= 1 - debuffStats.EnergyRate
+	return enemyStats
 }

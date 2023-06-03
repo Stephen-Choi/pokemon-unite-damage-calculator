@@ -27,6 +27,24 @@ func (p *GeneralPokemon) GetName() string {
 	return p.Name
 }
 
+func (p *GeneralPokemon) GetMovesThatCanCrit() (movesThatCanCrit []attack.Option) {
+	// Basic attacks can always crit
+	movesThatCanCrit = []attack.Option{
+		attack.BasicAttackOption,
+	}
+
+	if p.Move1.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.Move1)
+	}
+	if p.Move2.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.Move2)
+	}
+	if p.UniteMove.CanCriticallyHit() {
+		movesThatCanCrit = append(movesThatCanCrit, attack.UniteMove)
+	}
+	return
+}
+
 func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAttacks []attack.Option, isBattleItemAvailable bool, err error) {
 	// Basic attacks are always available
 	availableAttacks = []attack.Option{
@@ -45,14 +63,16 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 	}
 
 	// Check if battle item is available
-	isBattleItemAvailable = p.BattleItem.IsAvailable(elapsedTime)
+	if p.BattleItem != nil {
+		isBattleItemAvailable = p.BattleItem.IsAvailable(elapsedTime)
+	}
 
 	return
 }
 
 // ActivateBattleItem attempts to activate the battle item
 func (p *GeneralPokemon) ActivateBattleItem(elapsedTime float64) {
-	_, battleItemEffect, err := p.BattleItem.Activate(p.getStats(elapsedTime), elapsedTime)
+	_, battleItemEffect, err := p.BattleItem.Activate(p.GetStats(elapsedTime), elapsedTime)
 	if err != nil {
 		return
 	}
@@ -102,7 +122,7 @@ func (p *GeneralPokemon) activateHeldItems(statsBeforeAttack stats.Stats, attack
 // Note: Any buffs that are granted from the attack should not apply in this iteration of the attack. They should only
 // be available for the next attack (thus why we have a statsBeforeAttack var that is used everywhere that stats are needed).
 func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (finalResult attack.Result, err error) {
-	statsBeforeAttack := p.getStats(elapsedTime)
+	statsBeforeAttack := p.GetStats(elapsedTime)
 
 	var attackResult attack.Result
 	switch attackOption {
@@ -177,9 +197,15 @@ func (p *GeneralPokemon) addAdditionalDamage(attackOption attack.Option, additio
 	}
 }
 
-// getStats returns the pokemon's stats with any buffs applied
-func (p *GeneralPokemon) getStats(elapsedTime float64) stats.Stats {
+// GetStats returns the pokemon's stats with any buffs applied
+func (p *GeneralPokemon) GetStats(elapsedTime float64) stats.Stats {
 	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
 	p.Stats.ApplyBuffs(p.Buffs)
 	return p.Stats
+}
+
+// GetBuffs returns the buffs currently applied on the pokemon
+func (p *GeneralPokemon) GetBuffs(elapsedTime float64) stats.Buffs {
+	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
+	return p.Buffs
 }
