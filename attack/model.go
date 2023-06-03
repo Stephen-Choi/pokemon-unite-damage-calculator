@@ -205,8 +205,8 @@ type BasicAttack interface {
 
 type SkillMove interface {
 	CanCriticallyHit() bool
-	IsAvailable(elapsedTime float64) bool                                                                           // Check if the skill move is on cooldown
-	Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
+	IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool                                                // Check if the skill move is on cooldown
+	Activate(pokemonStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
 }
 
 // GetDelayForAttackSpeed returns the time delay to wait before attacking (for basic attack) again based on a pokemon's attack speed

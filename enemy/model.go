@@ -10,11 +10,13 @@ type Pokemon interface {
 	IsDefeated() bool
 	ApplyDamage(damageTaken float64)
 	GetRemainingHealth() float64
+	GetMissingHealth() float64
 }
 
 type DefaultEnemy struct {
-	Wild  bool
-	Stats stats.Stats
+	Wild       bool
+	StartingHP float64 // Useful for certain effects
+	Stats      stats.Stats
 }
 
 func (enemy *DefaultEnemy) IsWild() bool {
@@ -31,6 +33,10 @@ func (enemy *DefaultEnemy) IsDefeated() bool {
 
 func (enemy *DefaultEnemy) GetRemainingHealth() float64 {
 	return enemy.Stats.Hp
+}
+
+func (enemy *DefaultEnemy) GetMissingHealth() float64 {
+	return enemy.StartingHP - enemy.Stats.Hp
 }
 
 func (enemy *DefaultEnemy) ApplyDamage(damageTaken float64) {

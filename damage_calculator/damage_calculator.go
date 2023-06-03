@@ -1,6 +1,7 @@
 package damage_calculator
 
 import (
+	"fmt"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
@@ -70,6 +71,8 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			d.elapseTime()
 		}
 
+		fmt.Println("Elapsed time:", d.elapsedTime)
+
 		// Set up new state for the state log
 		state := State{
 			PokemonActions: make(map[string]attack.Option),
@@ -82,6 +85,7 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 
 			// Check if the pokemon can act
 			if !d.canPokemonAct(attackingPokemonName) {
+				fmt.Println("Pokemon cannot act:", attackingPokemonName)
 				state.PokemonActions[attackingPokemonName] = attack.CannotAct
 				continue
 			}
@@ -136,14 +140,20 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			if attackResult.ExecutionPercentDamage.Exists() {
 				var executionDamage float64
 				if attackResult.ExecutionPercentDamage.CappedDamage != 0 {
-					executionDamage = math.Min(d.enemyPokemon.GetRemainingHealth()*attackResult.ExecutionPercentDamage.Percent, attackResult.ExecutionPercentDamage.CappedDamage)
+					executionDamage = math.Min(d.enemyPokemon.GetMissingHealth()*attackResult.ExecutionPercentDamage.Percent, attackResult.ExecutionPercentDamage.CappedDamage)
 				} else {
-					executionDamage = d.enemyPokemon.GetRemainingHealth() * attackResult.ExecutionPercentDamage.Percent
+					executionDamage = d.enemyPokemon.GetMissingHealth() * attackResult.ExecutionPercentDamage.Percent
 				}
 
 				executionDamageTakenByEnemy := calculateDamageTaken(executionDamage, enemyStatsAfterDebuffs, attackResult.AttackType)
 				d.enemyPokemon.ApplyDamage(executionDamageTakenByEnemy)
+				fmt.Println("Pokemon execution damage:", executionDamageTakenByEnemy)
 			}
+
+			fmt.Println("Pokemon attack:", bestAction)
+			fmt.Println("Pokemon skill damage:", totalDamageDealt)
+
+			fmt.Println("Enemy health: ", d.enemyPokemon.GetRemainingHealth())
 
 			// Update state log for this pokemon
 			state.PokemonActions[attackingPokemonName] = bestAction
@@ -170,7 +180,7 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 
 // setActionDelay sets the delay for the next action for the attacking pokemon
 // Basic attacks have buckets that determine the next actionable frame
-// There is currently no frame data for skill moves to determine their exact duration, so arbitrarily choosing a 1 second delay
+// There is currently no frame data for skill moves to determine their exact duration, so arbitrarily choosing a 750 millisecond delay
 // TODO: if someone has frame data for skill moves, please update attack duration field for those moves
 func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackResult attack.Result, elapsedTime float64) {
 	attackDuration := attackResult.AttackDuration
@@ -189,7 +199,7 @@ func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackRes
 		actionDelay = attack.GetDelayForAttackSpeed(attackingPokemonAttackSpeed)
 	} else {
 		// Set delay to 1 second for any skill/unite move
-		actionDelay = 1000
+		actionDelay = 750
 	}
 	d.timeOfNextAvailableAction[attackingPokemonName] = elapsedTime + actionDelay
 }

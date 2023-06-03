@@ -39,11 +39,14 @@ func (move *Thunderbolt) CanCriticallyHit() bool {
 	return false
 }
 
-func (move *Thunderbolt) IsAvailable(elapsedTime float64) bool {
+func (move *Thunderbolt) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
 	if !move.used {
 		return true
 	}
-	return move.lastUsed+move.cooldown <= elapsedTime
+	// Apply cooldown reduction
+	updatedCooldown := move.cooldown * (1 - pokemonStats.CooldownReduction)
+
+	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
 func (move *Thunderbolt) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
