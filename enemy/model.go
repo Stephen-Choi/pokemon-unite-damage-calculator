@@ -7,38 +7,8 @@ import (
 type Pokemon interface {
 	IsWild() bool
 	GetStats() stats.Stats
-	IsDefeated() bool
-	ApplyDamage(damageTaken float64)
 	GetRemainingHealth() float64
 	GetMissingHealth() float64
-}
-
-type DefaultEnemy struct {
-	Wild       bool
-	StartingHP float64 // Useful for certain effects
-	Stats      stats.Stats
-}
-
-func (enemy *DefaultEnemy) IsWild() bool {
-	return enemy.Wild
-}
-
-func (enemy *DefaultEnemy) GetStats() stats.Stats {
-	return enemy.Stats
-}
-
-func (enemy *DefaultEnemy) IsDefeated() bool {
-	return enemy.Stats.Hp <= 0
-}
-
-func (enemy *DefaultEnemy) GetRemainingHealth() float64 {
-	return enemy.Stats.Hp
-}
-
-func (enemy *DefaultEnemy) GetMissingHealth() float64 {
-	return enemy.StartingHP - enemy.Stats.Hp
-}
-
-func (enemy *DefaultEnemy) ApplyDamage(damageTaken float64) {
-	enemy.Stats.Hp = enemy.Stats.Hp - damageTaken
+	IsDefeated() bool
+	ApplyDamage(damageTaken float64)
 }
