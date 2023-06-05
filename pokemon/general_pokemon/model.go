@@ -51,14 +51,16 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 		attack.BasicAttackOption,
 	}
 
+	pokemonStats := p.GetStats(elapsedTime)
+
 	// Check if skills are available
-	if p.Move1.IsAvailable(elapsedTime) {
+	if p.Move1.IsAvailable(pokemonStats, elapsedTime) {
 		availableAttacks = append(availableAttacks, attack.Move1)
 	}
-	if p.Move2.IsAvailable(elapsedTime) {
+	if p.Move2.IsAvailable(pokemonStats, elapsedTime) {
 		availableAttacks = append(availableAttacks, attack.Move2)
 	}
-	if p.UniteMove.IsAvailable(elapsedTime) {
+	if p.UniteMove.IsAvailable(pokemonStats, elapsedTime) {
 		availableAttacks = append(availableAttacks, attack.UniteMove)
 	}
 

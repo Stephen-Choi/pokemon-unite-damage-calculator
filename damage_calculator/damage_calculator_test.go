@@ -29,7 +29,8 @@ func setupDamageCalculatorScenario() (attackingPokemon map[string]pokemon.Pokemo
 
 	// Set up enemy
 	enemy = &enemy2.DefaultEnemy{
-		Wild: true,
+		Wild:       true,
+		StartingHP: 12350,
 		Stats: stats.Stats{
 			Hp:             12350, // Regis stats
 			Defense:        250,
@@ -62,11 +63,10 @@ func Test_CalculateRip(t *testing.T) {
 
 		// Test rip calculation works
 		result, err := damageCalc.CalculateRip()
+		assert.NoError(t, err)
 
 		fmt.Println("total time: ", result.TotalTime)
 		fmt.Println("num of state log: ", len(result.StateLog))
-
-		assert.NoError(t, err)
 
 		// Assert result is within expectations
 		// For a lvl 15 pikachu, should be able to defeat a 7:00 regi in the 20 seconds range

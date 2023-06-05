@@ -31,7 +31,7 @@ func (move *Thunderstorm) CanCriticallyHit() bool {
 	return false
 }
 
-func (move *Thunderstorm) IsAvailable(elapsedTime float64) bool {
+func (move *Thunderstorm) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
 	// Unite move is unlocked at level 9
 	if move.pokemonLevel < thunderstormMinLevel {
 		return false
@@ -40,7 +40,10 @@ func (move *Thunderstorm) IsAvailable(elapsedTime float64) bool {
 	if !move.used {
 		return true
 	}
-	return move.lastUsed+move.cooldown <= elapsedTime
+	// Apply energy recharge rate reduction
+	updatedCooldown := move.cooldown * (1 - pokemonStats.EnergyRate)
+
+	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
 func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) { // Damage calculation

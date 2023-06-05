@@ -44,20 +44,24 @@ func (move *VoltTackle) CanCriticallyHit() bool {
 	return false
 }
 
-func (move *VoltTackle) IsAvailable(elapsedTime float64) bool {
+func (move *VoltTackle) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
 	if !move.used {
 		return true
 	}
-	return move.lastUsed+move.cooldown <= elapsedTime
+	// Apply cooldown reduction
+	updatedCooldown := move.cooldown * (1 - pokemonStats.CooldownReduction)
+
+	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
 func (move *VoltTackle) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	damage := 0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140
+	damage := (0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140) * 5 // Volt tackle hits 5 times
 
 	result = attack.Result{
-		AttackOption: attack.Move2,
-		AttackType:   attack.SpecialAttack,
-		DamageDealt:  damage,
+		AttackOption:   attack.Move2,
+		AttackType:     attack.SpecialAttack,
+		DamageDealt:    damage,
+		AttackDuration: 1400,
 	}
 	move.setLastUsed(elapsedTime)
 	return
