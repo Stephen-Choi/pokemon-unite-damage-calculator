@@ -40,8 +40,8 @@ func (move *Thunderstorm) IsAvailable(pokemonStats stats.Stats, elapsedTime floa
 	if !move.used {
 		return true
 	}
-	// Apply cooldown reduction
-	updatedCooldown := move.cooldown * (1 - pokemonStats.CooldownReduction)
+	// Apply energy recharge rate reduction
+	updatedCooldown := move.cooldown * (1 - pokemonStats.EnergyRate)
 
 	return move.lastUsed+updatedCooldown <= elapsedTime
 }

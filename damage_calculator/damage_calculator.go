@@ -35,6 +35,7 @@ type DamageCalculator struct {
 	inflictedDebuffs          []attack.Debuff
 	overtimeDamageByPokemon   map[string][]attack.OverTimeDamage
 	timeOfNextAvailableAction map[string]float64         // timeOfNextAvailableAction is a map of pokemon name to the time at which the next action is available
+	pokemonPrevAction         map[string]attack.Option   // pokemonPrevAction is a map of pokemon name to its previous action
 	attacksThatCanCrit        map[string][]attack.Option // attacksThatCanCrit is a map of pokemon name to its attacks that can crit
 
 	elapsedTime float64
@@ -54,6 +55,7 @@ func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokem
 		attacksThatCanCrit:        attacksThatCanCrit,
 		overtimeDamageByPokemon:   make(map[string][]attack.OverTimeDamage),
 		timeOfNextAvailableAction: make(map[string]float64),
+		pokemonPrevAction:         make(map[string]attack.Option),
 	}
 }
 
@@ -83,20 +85,20 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 		for _, attackingPokemon := range d.attackingPokemon {
 			attackingPokemonName := attackingPokemon.GetName()
 
-			// Check if the pokemon can act
-			if !d.canPokemonAct(attackingPokemonName) {
-				fmt.Println("Pokemon cannot act:", attackingPokemonName)
-				state.PokemonActions[attackingPokemonName] = attack.CannotAct
-				continue
-			}
-
-			// If pokemon can act, determine the best action to take
+			// Check what moves are available
 			availableAttacks, isBattleItemAvailable, err := attackingPokemon.GetAvailableActions(d.elapsedTime)
 			if err != nil {
 				panic(err) // TODO: handle error
 			}
+
+			// Check if the pokemon can act
+			if !d.canPokemonAct(attackingPokemonName, availableAttacks) {
+				//fmt.Println("Pokemon cannot act:", attackingPokemonName)
+				state.PokemonActions[attackingPokemonName] = attack.CannotAct
+				continue
+			}
+
 			// If battle item is available, default to always activating it
-			// TODO: check if battle item can be activated even during a move...
 			if isBattleItemAvailable {
 				attackingPokemon.ActivateBattleItem(d.elapsedTime)
 			}
@@ -151,7 +153,7 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			}
 
 			fmt.Println("Pokemon attack:", bestAction)
-			fmt.Println("Pokemon skill damage:", totalDamageDealt)
+			fmt.Println("Pokemon skill damage:", damageTakenByEnemy)
 
 			fmt.Println("Enemy health: ", d.enemyPokemon.GetRemainingHealth())
 
@@ -161,6 +163,7 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 
 			// Set delay for next action for the attacking pokemon
 			d.setActionDelay(attackingPokemonName, attackResult, d.elapsedTime)
+			d.pokemonPrevAction[attackingPokemonName] = attackResult.AttackOption
 		}
 
 		// Add entry to StateLog
@@ -198,13 +201,27 @@ func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackRes
 		attackingPokemonAttackSpeed := d.attackingPokemon[attackingPokemonName].GetStats(elapsedTime).AttackSpeed
 		actionDelay = attack.GetDelayForAttackSpeed(attackingPokemonAttackSpeed)
 	} else {
-		// Set delay to 1 second for any skill/unite move
+		// Set delay to 750 second for any skill/unite move
 		actionDelay = 750
 	}
 	d.timeOfNextAvailableAction[attackingPokemonName] = elapsedTime + actionDelay
 }
 
-func (d *DamageCalculator) canPokemonAct(pokemonName string) bool {
+func (d *DamageCalculator) canPokemonAct(pokemonName string, availableAttacks []attack.Option) bool {
+	// If prev move was basic attack, and only available move is basic attack, pokemon must wait through the attack speed delay
+	prevMoveWasBasicAttack := d.pokemonPrevAction[pokemonName] == attack.BasicAttackOption
+
+	prevAndCurrentAttacksAreBasic := prevMoveWasBasicAttack && len(availableAttacks) == 1 && availableAttacks[0] == attack.BasicAttackOption
+	if prevAndCurrentAttacksAreBasic {
+		return d.timeOfNextAvailableAction[pokemonName] <= d.elapsedTime
+	}
+
+	// If prev move was a basic attack and a skill move is available, pokemon can act immediately
+	if prevMoveWasBasicAttack && len(availableAttacks) > 1 {
+		return true
+	}
+
+	// Prev move was not a basic attack, pokemon must wait through the skill animation delay
 	return d.timeOfNextAvailableAction[pokemonName] <= d.elapsedTime
 }
 
@@ -309,5 +326,5 @@ func calculateDamageTaken(attackDamage float64, enemyStats stats.Stats, attackTy
 	} else {
 		damageTaken = attackDamage * 600 / (600 + enemyStats.SpecialDefense)
 	}
-	return damageTaken
+	return math.Floor(damageTaken)
 }
