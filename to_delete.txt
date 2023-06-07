@@ -1,0 +1,12 @@
+c.JSON(http.StatusOK, response)
+
+ctx := api.Context(c)
+
+	companyID := c.GetString(api.CtxCompanyObjectID)
+	// Unmarshal new json payload
+	var invitedPartner partners.InvitedPartner
+	if err := c.ShouldBindJSON(&invitedPartner); err != nil {
+		c.Abort()
+		c.Error(errors.Build(err, ctx, errors.BadRequest))
+		return
+	}

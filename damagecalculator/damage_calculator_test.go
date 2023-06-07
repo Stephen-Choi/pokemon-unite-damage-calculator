@@ -1,4 +1,4 @@
-package damage_calculator
+package damagecalculator
 
 import (
 	"fmt"

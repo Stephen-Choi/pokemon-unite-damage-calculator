@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 )
@@ -18,6 +19,7 @@ const (
 	criticalHitChanceStat StatName = "criticalHitChance"
 	criticalHitDamageStat StatName = "criticalHitDamage"
 	cooldownReductionStat StatName = "cooldownReduction"
+	regiBuffDuration               = 90000
 )
 
 // JsonStats is a temporary struct used to unmarshal the pokemon json stats
@@ -244,6 +246,9 @@ const (
 	HeldItem2Buff   BuffName = "heldItem2Buff"
 	HeldItem3Buff   BuffName = "heldItem3Buff"
 	TeamBuff        BuffName = "teamBuff" // Team buff is a buff applied by a teammate TODO not utilized yet...
+	RegisteelBuff   BuffName = "registeelBuff"
+	RegirockBuff    BuffName = "regirockBuff"
+	RegiceBuff      BuffName = "regiceBuff"
 )
 
 func GetHeldItemName(index int) BuffName {
@@ -268,4 +273,75 @@ func NewBuffs() Buffs {
 
 func (b Buffs) Add(buffName BuffName, buff Buff) {
 	b[buffName] = buff
+}
+
+var ValidBuffs = []string{
+	"regirock",
+	"registeel",
+	"regice",
+}
+
+var regirockBuff = Buff{
+	BuffType: PercentIncrease,
+	Stats: Stats{
+		Defense:        0.3,
+		SpecialDefense: 0.25,
+	},
+}
+
+var registeelBuff = Buff{
+	BuffType: PercentIncrease,
+	Stats: Stats{
+		Attack:        0.15,
+		SpecialAttack: 0.15,
+	},
+}
+
+var regiceBuff = Buff{
+	BuffType: PercentIncrease,
+	// TODO: set up healing buff (not really needed now so omitting)
+}
+
+// GetTeamBuffs returns a map of buffs applied on a pokemon from a list of buff names
+func GetTeamBuffs(teamBuffsNames []string, timeRemaining int) (Buffs, error) {
+	if !isValidTeamBuffs(teamBuffsNames) {
+		return nil, errors.New("invalid team buff")
+	}
+
+	teamBuffs := NewBuffs()
+	for _, teamBuffName := range teamBuffsNames {
+		switch teamBuffName {
+		case "regirock":
+			buff := regirockBuff
+			buff.DurationEnd = float64(timeRemaining + regiBuffDuration)
+			teamBuffs.Add(RegirockBuff, buff)
+		case "registeel":
+			buff := registeelBuff
+			buff.DurationEnd = float64(timeRemaining + regiBuffDuration)
+			teamBuffs.Add(RegisteelBuff, buff)
+		case "regice":
+			buff := registeelBuff
+			buff.DurationEnd = float64(timeRemaining + regiBuffDuration)
+			teamBuffs.Add(RegiceBuff, buff)
+		}
+	}
+	return teamBuffs, nil
+}
+
+func isValidTeamBuffs(teamBuffs []string) bool {
+	for _, buff := range teamBuffs {
+		if !isValidBuff(buff) {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidBuff(buff string) bool {
+	for _, validBuff := range ValidBuffs {
+		if buff == validBuff {
+			return true
+		}
+	}
+	return false
 }
