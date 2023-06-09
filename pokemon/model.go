@@ -61,6 +61,7 @@ const (
 	MewName             = "mew"
 	SylveonName         = "sylveon"
 	WigglytuffName      = "wigglytuff"
+	UmbreonName         = "umbreon"
 )
 
 var PlayablePokemons = []string{
@@ -116,12 +117,52 @@ var PlayablePokemons = []string{
 	MewName,
 	SylveonName,
 	WigglytuffName,
+	UmbreonName,
 }
 
-// IsPokemonPlayable checks if a pokemon is playable
-func IsPokemonPlayable(pokemonName string) bool {
+var Defenders = []string{
+	BlastoiseName,
+	CrustleName,
+	GoodraName,
+	GreedentName,
+	LaprasName,
+	MamoswineName,
+	SlowbroName,
+	SnorlaxName,
+	TrevenantName,
+	UmbreonName,
+}
+
+var Supporters = []string{
+	BlisseyName,
+	ClefableName,
+	ComfeyName,
+	EldegossName,
+	HoopaName,
+	MrMimeName,
+	SableyeName,
+	WigglytuffName,
+}
+
+// isPokemonPlayable checks if a pokemon is playable
+func isPokemonPlayable(pokemonName string) bool {
 	for _, availablePokemon := range PlayablePokemons {
 		if pokemonName == availablePokemon {
+			return true
+		}
+	}
+	return false
+}
+
+// isPokemonIsDefenderOrSupporter checks if a pokemon is a defender or supporter
+func isPokemonIsDefenderOrSupporter(pokemonName string) bool {
+	for _, defender := range Defenders {
+		if pokemonName == defender {
+			return true
+		}
+	}
+	for _, supporter := range Supporters {
+		if pokemonName == supporter {
 			return true
 		}
 	}
@@ -139,4 +180,5 @@ type Pokemon interface {
 	GetBuffs() stats.Buffs
 	GetAllAdditionalDamage() attack.AllAdditionalDamage
 	ClearExpiredEffects(elapsedTime float64)
+	AddAdditionalDamage(additionalDamageName string, additionalDamage attack.AdditionalDamage)
 }

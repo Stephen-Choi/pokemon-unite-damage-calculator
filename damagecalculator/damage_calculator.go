@@ -140,7 +140,7 @@ func (d *DamageCalculator) performAction(attackingPokemon pokemon.Pokemon) Pokem
 		pokemonActionResult.ActionName = UseBattleItem
 		pokemonCanAttack = false
 	} else {
-		if !d.canPokemonAct(attackingPokemonName, availableAttacks) {
+		if !d.canPokemonAttack(attackingPokemonName, availableAttacks) {
 			pokemonActionResult.ActionName = CannotAct
 			pokemonCanAttack = false
 		}
@@ -255,7 +255,7 @@ func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackRes
 	d.timeOfNextAvailableAction[attackingPokemonName] = elapsedTime + actionDelay
 }
 
-func (d *DamageCalculator) canPokemonAct(pokemonName string, availableAttacks []attack.Option) bool {
+func (d *DamageCalculator) canPokemonAttack(pokemonName string, availableAttacks []attack.Option) bool {
 	// If prev move was basic attack, and only available move is basic attack, pokemon must wait through the attack speed delay
 	prevMoveWasBasicAttack := d.pokemonPrevAction[pokemonName] == attack.BasicAttackOption
 
