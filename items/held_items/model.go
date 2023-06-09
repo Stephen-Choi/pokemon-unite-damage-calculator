@@ -6,30 +6,30 @@ import (
 )
 
 const (
-	AeosCookieName         = "aeos_cookie"
-	BuddyBarrierName       = "buddy_barrier"
-	EnergyAmplifierName    = "energy_amplifier"
-	FocusBandName          = "focus_band"
-	RapidFireScarfName     = "rapid_fire_scarf"
-	RockyHelmetName        = "rocky_helmet"
-	ScoreShieldName        = "score_shield"
-	SpecialAttackSpecsName = "special_attack_specs"
-	AssaultVestName        = "assault_vest"
-	ChoiceSpecsName        = "choice_specs"
-	ExpShareName           = "exp_share"
+	AeosCookieName         = "aeos-cookie"
+	BuddyBarrierName       = "buddy-barrier"
+	EnergyAmplifierName    = "energy-amplifier"
+	FocusBandName          = "focus-band"
+	RapidFireScarfName     = "rapid-fire-scarf"
+	RockyHelmetName        = "rocky-helmet"
+	ScoreShieldName        = "score-shield"
+	SpecialAttackSpecsName = "special-attack-specs"
+	AssaultVestName        = "assault-vest"
+	ChoiceSpecsName        = "choice-specs"
+	ExpShareName           = "exp-share"
 	LeftoversName          = "leftovers"
-	RazorClawName          = "razor_claw"
-	RustedSwordName        = "rusted_sword"
-	ShellBellName          = "shell_bell"
-	WeaknessPolicyName     = "weakness_policy"
-	AttackWeightName       = "attack_weight"
-	DrainCrownName         = "drain_crown"
-	FloatStoneName         = "float_stone"
-	MuscleBandName         = "muscle_band"
-	RescueHoodName         = "rescue_hood"
-	ScopeLensName          = "scope_lens"
-	SlickSpoonName         = "slick_spoon"
-	WiseGlassesName        = "wise_glasses"
+	RazorClawName          = "razor-claw"
+	RustedSwordName        = "rusted-sword"
+	ShellBellName          = "shell-bell"
+	WeaknessPolicyName     = "weakness-policy"
+	AttackWeightName       = "attack-weight"
+	DrainCrownName         = "drain-crown"
+	FloatStoneName         = "float-stone"
+	MuscleBandName         = "muscle-band"
+	RescueHoodName         = "rescue-hood"
+	ScopeLensName          = "scope-lens"
+	SlickSpoonName         = "slick-spoon"
+	WiseGlassesName        = "wise-glasses"
 )
 
 var playableHeldItems = []string{
@@ -86,8 +86,9 @@ type HeldItemEffect struct {
 }
 
 type HeldItem interface {
+	GetName() string
 	GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats)
-	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error)
 }
 
 // HeldItemSpecialEffect contains details about a special effect that a held item provides

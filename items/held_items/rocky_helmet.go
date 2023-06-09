@@ -25,11 +25,15 @@ func NewRockyHelmet() (rockyHelmet *RockyHelmet, err error) {
 	return
 }
 
+func (a *RockyHelmet) GetName() string {
+	return "rocky helmet"
+}
+
 func (a *RockyHelmet) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 
-func (a *RockyHelmet) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *RockyHelmet) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

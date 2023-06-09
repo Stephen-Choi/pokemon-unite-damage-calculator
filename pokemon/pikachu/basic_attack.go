@@ -37,9 +37,10 @@ func (ba *BasicAttack) Attack(originalStats stats.Stats, enemyPokemon enemy.Poke
 	}
 
 	result = attack.Result{
-		AttackOption: attack.BasicAttackOption,
-		AttackType:   attackType,
-		DamageDealt:  damage,
+		AttackOption:    attack.BasicAttackOption,
+		AttackName:      attack.BasicAttackName,
+		AttackType:      attackType,
+		BaseDamageDealt: damage,
 	}
 	return
 }

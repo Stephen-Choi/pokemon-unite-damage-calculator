@@ -27,13 +27,17 @@ func NewAttackWeight(numStacks int) (attackWeight *AttackWeight, err error) {
 	return
 }
 
+func (a *AttackWeight) GetName() string {
+	return "attack weight"
+}
+
 func (a *AttackWeight) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	stackBoosts := a.numStacks * a.SpecialEffect.Stack.Amount
 	a.Stats.Attack += float64(stackBoosts)
 	return a.Stats
 }
 
-func (a *AttackWeight) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *AttackWeight) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

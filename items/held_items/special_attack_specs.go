@@ -27,13 +27,17 @@ func NewSpecialAttackSpecs(numStacks int) (specialAttackSpecs *SpecialAttackSpec
 	return
 }
 
+func (a *SpecialAttackSpecs) GetName() string {
+	return "special attack specs"
+}
+
 func (a *SpecialAttackSpecs) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	stackBoosts := a.numStacks * a.SpecialEffect.Stack.Amount
 	a.Stats.SpecialAttack += float64(stackBoosts)
 	return a.Stats
 }
 
-func (a *SpecialAttackSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *SpecialAttackSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

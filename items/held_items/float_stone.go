@@ -25,11 +25,15 @@ func NewFloatStone() (floatStone *FloatStone, err error) {
 	return
 }
 
+func (a *FloatStone) GetName() string {
+	return "float stone"
+}
+
 func (a *FloatStone) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 
-func (a *FloatStone) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *FloatStone) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

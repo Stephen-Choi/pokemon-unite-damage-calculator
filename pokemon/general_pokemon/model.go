@@ -51,7 +51,7 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 		attack.BasicAttackOption,
 	}
 
-	pokemonStats := p.GetStats(elapsedTime)
+	pokemonStats := p.GetStats()
 
 	// Check if skills are available
 	if p.Move1.IsAvailable(pokemonStats, elapsedTime) {
@@ -74,16 +74,16 @@ func (p *GeneralPokemon) GetAvailableActions(elapsedTime float64) (availableAtta
 
 // ActivateBattleItem attempts to activate the battle item
 func (p *GeneralPokemon) ActivateBattleItem(elapsedTime float64) {
-	_, battleItemEffect, err := p.BattleItem.Activate(p.GetStats(elapsedTime), elapsedTime)
+	_, battleItemEffect, err := p.BattleItem.Activate(p.GetStats(), elapsedTime)
 	if err != nil {
 		return
 	}
 
 	if battleItemEffect.Buff.Exists() {
-		p.Buffs.Add(stats.BattleItemBuff, battleItemEffect.Buff)
+		p.Buffs.Add(p.BattleItem.GetName(), battleItemEffect.Buff)
 	}
 	if battleItemEffect.AdditionalDamage.Exists() {
-		p.AllAdditionalDamage.Add(attack.BattleItemAdditionalDamage, battleItemEffect.AdditionalDamage)
+		p.AllAdditionalDamage.Add(p.BattleItem.GetName(), battleItemEffect.AdditionalDamage)
 	}
 }
 
@@ -94,20 +94,20 @@ func (p *GeneralPokemon) activateHeldItems(statsBeforeAttack stats.Stats, attack
 	attackType := attackResult.AttackType
 
 	// Default to the attack result, build on top of it
-	for index, heldItem := range p.HeldItems {
-		_, heldItemEffect, err := heldItem.Activate(statsBeforeAttack, elapsedTime, attackOption, attackType)
+	for _, heldItem := range p.HeldItems {
+		_, heldItemEffect, err := heldItem.Activate(statsBeforeAttack, elapsedTime, attackOption, attackType, attackResult.BaseDamageDealt)
 		if err != nil {
 			return nil, err
 		}
 
 		// Apply any buffs that were granted from the held item
 		if heldItemEffect.Buff.Exists() {
-			p.Buffs.Add(stats.GetHeldItemName(index), heldItemEffect.Buff)
+			p.Buffs.Add(heldItem.GetName(), heldItemEffect.Buff)
 		}
 
 		// Apply any additional damage that were granted from the held item
 		if heldItemEffect.AdditionalDamage.Exists() {
-			p.AllAdditionalDamage.Add(attack.GetAdditionalDamageName(index), heldItemEffect.AdditionalDamage)
+			p.AllAdditionalDamage.Add(heldItem.GetName(), heldItemEffect.AdditionalDamage)
 		}
 
 		// Add debuffs that are inflicted by held item to the enemy pokemon
@@ -124,8 +124,7 @@ func (p *GeneralPokemon) activateHeldItems(statsBeforeAttack stats.Stats, attack
 // Note: Any buffs that are granted from the attack should not apply in this iteration of the attack. They should only
 // be available for the next attack (thus why we have a statsBeforeAttack var that is used everywhere that stats are needed).
 func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (finalResult attack.Result, err error) {
-	statsBeforeAttack := p.GetStats(elapsedTime)
-
+	statsBeforeAttack := p.GetStats()
 	var attackResult attack.Result
 	switch attackOption {
 	case attack.BasicAttackOption:
@@ -148,8 +147,8 @@ func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.P
 		p.addBuff(attackOption, attackResult.Buff)
 	}
 	// Add additional damage
-	if attackResult.AdditionalDamage.Exists() {
-		p.addAdditionalDamage(attackOption, attackResult.AdditionalDamage)
+	if attackResult.AdditionalDamageEffect.Exists() {
+		p.addAdditionalDamage(attackOption, attackResult.AdditionalDamageEffect)
 	}
 
 	// Apply held item effects
@@ -163,12 +162,12 @@ func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.P
 	}
 
 	// Apply additional damage
-	p.AllAdditionalDamage.ClearExpiredDurationAdditionalDamage(elapsedTime)
-	totalAdditionalDamage := p.AllAdditionalDamage.Calculate(attackResult.DamageDealt, enemyPokemon.GetStats())
-	finalResult.DamageDealt += totalAdditionalDamage
+	totalAdditionalDamage := p.AllAdditionalDamage.Calculate(attackResult.BaseDamageDealt, enemyPokemon.GetStats())
+	finalResult.AdditionalDamageDealt = totalAdditionalDamage
 
 	// Round to 2 decimal places
-	finalResult.DamageDealt = math.Floor(finalResult.DamageDealt*100) / 100
+	finalResult.BaseDamageDealt = math.Floor(finalResult.BaseDamageDealt*100) / 100
+	finalResult.AdditionalDamageDealt = math.Floor(finalResult.AdditionalDamageDealt*100) / 100
 
 	return
 }
@@ -178,36 +177,45 @@ func (p *GeneralPokemon) addBuff(attackOption attack.Option, buff stats.Buff) {
 	case attack.BasicAttackOption:
 		p.Buffs.Add(stats.BasicAttackBuff, buff)
 	case attack.Move1:
-		p.Buffs.Add(stats.Move1Buff, buff)
+		p.Buffs.Add(p.Move1.GetName(), buff)
 	case attack.Move2:
-		p.Buffs.Add(stats.Move2Buff, buff)
+		p.Buffs.Add(p.Move2.GetName(), buff)
 	case attack.UniteMove:
-		p.Buffs.Add(stats.UniteMoveBuff, buff)
+		p.Buffs.Add(p.UniteMove.GetName(), buff)
 	}
 }
 
 func (p *GeneralPokemon) addAdditionalDamage(attackOption attack.Option, additionalDamage attack.AdditionalDamage) {
 	switch attackOption {
 	case attack.BasicAttackOption:
-		p.AllAdditionalDamage.Add(attack.BasicAttackAdditionalDamage, additionalDamage)
+		p.AllAdditionalDamage.Add(string(attack.BasicAttackOption), additionalDamage)
 	case attack.Move1:
-		p.AllAdditionalDamage.Add(attack.Move1AdditionalDamage, additionalDamage)
+		p.AllAdditionalDamage.Add(p.Move1.GetName(), additionalDamage)
 	case attack.Move2:
-		p.AllAdditionalDamage.Add(attack.Move2AdditionalDamage, additionalDamage)
+		p.AllAdditionalDamage.Add(p.Move2.GetName(), additionalDamage)
 	case attack.UniteMove:
-		p.AllAdditionalDamage.Add(attack.UniteMoveAdditionalDamage, additionalDamage)
+		p.AllAdditionalDamage.Add(p.UniteMove.GetName(), additionalDamage)
 	}
 }
 
 // GetStats returns the pokemon's stats with any buffs applied
-func (p *GeneralPokemon) GetStats(elapsedTime float64) stats.Stats {
-	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
+func (p *GeneralPokemon) GetStats() stats.Stats {
 	p.Stats.ApplyBuffs(p.Buffs)
 	return p.Stats
 }
 
 // GetBuffs returns the buffs currently applied on the pokemon
-func (p *GeneralPokemon) GetBuffs(elapsedTime float64) stats.Buffs {
-	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
+func (p *GeneralPokemon) GetBuffs() stats.Buffs {
 	return p.Buffs
+}
+
+// GetAllAdditionalDamage returns the additional damage currently applied on the pokemon
+func (p *GeneralPokemon) GetAllAdditionalDamage() attack.AllAdditionalDamage {
+	return p.AllAdditionalDamage
+}
+
+// ClearExpiredEffects clears expired buffs and additional damage effects
+func (p *GeneralPokemon) ClearExpiredEffects(elapsedTime float64) {
+	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
+	p.AllAdditionalDamage.ClearCompletedAdditionalDamageEffects(elapsedTime)
 }

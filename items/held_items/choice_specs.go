@@ -27,26 +27,30 @@ func NewChoiceSpecs() (choiceSpecs *ChoiceSpecs, err error) {
 	return
 }
 
+func (item *ChoiceSpecs) GetName() string {
+	return "choice specs"
+}
+
 func (item *ChoiceSpecs) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-func (item *ChoiceSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *ChoiceSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if item.isOnCooldown(elapsedTime) {
 		onCooldown = true
 		return
 	}
 
-	// Choice specs only activates on move1 or move2
-	if attackOption != attack.Move1 && attackOption != attack.Move2 {
+	// Choice specs only activates on move1 or move2. Move must also inflict damage.
+	if attackOption != attack.Move1 && attackOption != attack.Move2 && attackDamage != 0.0 {
 		return // early return, don't trigger cooldown
 	}
 
 	// Perform choice specs effect
 	extraDamage := 60.0 + 0.4*float64(originalStats.SpecialAttack)
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:   attack.SimpleAdditionalDamage,
+		Type:   attack.SingleInstance,
 		Amount: extraDamage,
 	}
 

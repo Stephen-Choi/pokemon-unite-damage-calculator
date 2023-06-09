@@ -18,9 +18,5 @@ func GetPokemon(pokemonName string, level int, move1Name string, move2Name strin
 		pokemon, err = pikachu.NewPikachu(level, move1Name, move2Name, heldItems, battleItem, nil)
 	}
 
-	if err != nil {
-		err = fmt.Errorf("error getting pokemon %s: %w", pokemonName, err)
-	}
-
 	return
 }

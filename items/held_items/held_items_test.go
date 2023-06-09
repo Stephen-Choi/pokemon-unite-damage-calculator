@@ -13,19 +13,19 @@ func testCooldown(t *testing.T, heldItem HeldItem, itemCooldown float64, attackO
 	startingTime := 0.0
 
 	// Activate
-	onCooldown, _, err := heldItem.Activate(stats.Stats{}, startingTime, attackOption, attackType)
+	onCooldown, _, err := heldItem.Activate(stats.Stats{}, startingTime, attackOption, attackType, 0)
 	assert.NoError(t, err)
 	assert.False(t, onCooldown)
 
 	// Assert that item will not activate if on cooldown
 	onCooldownTime := itemCooldown - 1
-	onCooldown, _, err = heldItem.Activate(stats.Stats{}, onCooldownTime, attackOption, attackType)
+	onCooldown, _, err = heldItem.Activate(stats.Stats{}, onCooldownTime, attackOption, attackType, 0)
 	assert.NoError(t, err)
 	assert.True(t, onCooldown)
 
 	// Assert that item will activate after cooldown
 	offCooldownTime := itemCooldown
-	onCooldown, _, err = heldItem.Activate(stats.Stats{}, offCooldownTime, attackOption, attackType)
+	onCooldown, _, err = heldItem.Activate(stats.Stats{}, offCooldownTime, attackOption, attackType, 0)
 	assert.NoError(t, err)
 	assert.False(t, onCooldown)
 }

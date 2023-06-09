@@ -135,6 +135,8 @@ type Pokemon interface {
 	Attack(attack attack.Option, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error)    // Get the attack dealt by a pokemon's attack and possible status effects
 	GetMovesThatCanCrit() []attack.Option                                                                              // Get the list of moves that can crit
 	ActivateBattleItem(elapsedTime float64)
-	GetStats(elapsedTime float64) stats.Stats
-	GetBuffs(elapsedTime float64) stats.Buffs
+	GetStats() stats.Stats
+	GetBuffs() stats.Buffs
+	GetAllAdditionalDamage() attack.AllAdditionalDamage
+	ClearExpiredEffects(elapsedTime float64)
 }

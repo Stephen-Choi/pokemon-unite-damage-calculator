@@ -27,6 +27,10 @@ func NewThunderstorm(level int) (move *Thunderstorm) {
 	return
 }
 
+func (move *Thunderstorm) GetName() string {
+	return "thunderstorm (unite move)"
+}
+
 func (move *Thunderstorm) CanCriticallyHit() bool {
 	return false
 }
@@ -46,7 +50,7 @@ func (move *Thunderstorm) IsAvailable(pokemonStats stats.Stats, elapsedTime floa
 	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
-func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) { // Damage calculation
+func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) { // BaseDamage calculation
 	var damagePerHit float64
 	isEnemyWildPokemon := enemyPokemon.IsWild()
 	if !isEnemyWildPokemon {
@@ -65,16 +69,19 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 
 	result = attack.Result{
 		AttackOption: attack.UniteMove,
+		AttackName:   move.GetName(),
 		AttackType:   attack.SpecialAttack,
 		OvertimeDamage: attack.OverTimeDamage{
-			Damage:          damagePerHit,
+			Source:          move.GetName(),
+			AttackType:      attack.SpecialAttack,
+			BaseDamage:      damagePerHit,
 			DamageFrequency: damageFrequency,
 			DurationStart:   elapsedTime,
 			DurationEnd:     elapsedTime + moveDuration,
 		},
 		Buff: stats.Buff{
 			DurationEnd: uniteBuffDuration + elapsedTime,
-			Stats: stats.Stats{
+			StatIncrease: stats.Stats{
 				CooldownReduction: 0.3,
 			},
 			BuffType: stats.PercentIncrease,

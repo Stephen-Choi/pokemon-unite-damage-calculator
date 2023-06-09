@@ -29,11 +29,15 @@ func NewRapidFireScarf() (scarf *RapidFireScarf, err error) {
 	return
 }
 
+func (item *RapidFireScarf) GetName() string {
+	return "rapid fire scarf"
+}
+
 func (item *RapidFireScarf) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if item.isOnCooldown(elapsedTime) {
 		onCooldown = true
@@ -59,7 +63,7 @@ func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime floa
 
 	// Perform Rapid Fire Scarf effect
 	effect.Buff = stats.Buff{
-		Stats: stats.Stats{
+		StatIncrease: stats.Stats{
 			AttackSpeed: 0.3,
 		},
 		DurationEnd: elapsedTime + item.SpecialEffect.Buff.Duration,

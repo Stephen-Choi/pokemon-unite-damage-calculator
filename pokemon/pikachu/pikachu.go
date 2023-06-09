@@ -17,11 +17,11 @@ const (
 type MoveName string
 
 const (
-	ThunderShockName MoveName = "thunder_shock"
-	ElectroBallName  MoveName = "electro_ball"
+	ThunderShockName MoveName = "thunder-shock"
+	ElectroBallName  MoveName = "electro-ball"
 	ThunderName      MoveName = "thunder"
 	ElectrowebName   MoveName = "electroweb"
-	VoltTackleName   MoveName = "volt_tackle"
+	VoltTackleName   MoveName = "volt-tackle"
 	ThunderboltName  MoveName = "thunderbolt"
 )
 

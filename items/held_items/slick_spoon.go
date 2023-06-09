@@ -25,11 +25,15 @@ func NewSlickSpoon() (slickSpoon *SlickSpoon, err error) {
 	return
 }
 
+func (item *SlickSpoon) GetName() string {
+	return "slick spoon"
+}
+
 func (item *SlickSpoon) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-func (item *SlickSpoon) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *SlickSpoon) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Slick Spoon only activates on special attack type attacks
 	if attackType != attack.SpecialAttack {
 		return // early return

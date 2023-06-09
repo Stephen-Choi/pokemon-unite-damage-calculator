@@ -25,11 +25,15 @@ func NewLeftovers() (leftovers *Leftovers, err error) {
 	return
 }
 
+func (a *Leftovers) GetName() string {
+	return "leftovers"
+}
+
 func (a *Leftovers) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 
-func (a *Leftovers) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *Leftovers) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

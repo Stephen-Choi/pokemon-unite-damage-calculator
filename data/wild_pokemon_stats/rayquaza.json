@@ -1,35 +1,35 @@
 [
   {
     "time_remaining": 120,
-    "health": 30008,
+    "hp": 30008,
     "attack": 463,
     "defense": 250,
     "sp. def": 250
   },
   {
     "time_remaining": 100,
-    "health": 31401,
+    "hp": 31401,
     "attack": 477,
     "defense": 250,
     "sp. def": 250
   },
   {
     "time_remaining": 70,
-    "health": 32794,
+    "hp": 32794,
     "attack": 492,
     "defense": 250,
     "sp. def": 250
   },
   {
     "time_remaining": 40,
-    "health": 34187,
+    "hp": 34187,
     "attack": 506,
     "defense": 250,
     "sp. def": 250
   },
   {
     "time_remaining": 10,
-    "health": 35580,
+    "hp": 35580,
     "attack": 521,
     "defense": 250,
     "sp. def": 250

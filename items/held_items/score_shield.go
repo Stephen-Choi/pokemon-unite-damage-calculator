@@ -25,11 +25,15 @@ func NewScoreShield() (scoreShield *ScoreShield, err error) {
 	return
 }
 
+func (s *ScoreShield) GetName() string {
+	return "score shield"
+}
+
 func (s *ScoreShield) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return s.Stats
 }
 
-func (s *ScoreShield) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (s *ScoreShield) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

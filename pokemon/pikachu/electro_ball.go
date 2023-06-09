@@ -35,6 +35,10 @@ func NewElectroBall(level int) (move *ElectroBall, err error) {
 	return
 }
 
+func (move *ElectroBall) GetName() string {
+	return "electro ball"
+}
+
 func (move *ElectroBall) CanCriticallyHit() bool {
 	return false
 }
@@ -61,9 +65,10 @@ func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.
 	}
 
 	result = attack.Result{
-		AttackOption: attack.Move1,
-		AttackType:   attack.SpecialAttack,
-		DamageDealt:  damage,
+		AttackOption:    attack.Move1,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damage,
 		ExecutionPercentDamage: attack.ExecutePercentDamage{
 			Percent:      executionPercent,
 			CappedDamage: 1200,

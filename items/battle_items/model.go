@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	FluffyTailName = "fluffy_tail"
-	XAttackName    = "x_attack"
-	EjectButton    = "eject_button"
-	FullHeal       = "full_heal"
-	GoalGetter     = "goal_getter"
+	FluffyTailName = "fluffy-tail"
+	XAttackName    = "x-attack"
+	EjectButton    = "eject-button"
+	FullHeal       = "full-heal"
+	GoalGetter     = "goal-getter"
 	Potion         = "potion"
-	SlowSmoke      = "slow_smoke"
-	XSpeed         = "x_speed"
+	SlowSmoke      = "slow-smoke"
+	XSpeed         = "x-speed"
 )
 
 var playableBattleItems = []string{
@@ -43,14 +43,15 @@ type BattleItemEffect struct {
 }
 
 type BattleItem interface {
+	GetName() string
 	IsAvailable(elapsedTime float64) bool
 	Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error)
 }
 
 type StatsBuff struct {
 	AttackBuff        float64 `json:"attack,omitempty"`
-	AttackSpeedBuff   float64 `json:"atk speed,omitempty"`
-	SpecialAttackBuff float64 `json:"sp. atk,omitempty"`
+	AttackSpeedBuff   float64 `json:"atk spd,omitempty"`
+	SpecialAttackBuff float64 `json:"sp. attack,omitempty"`
 	Duration          float64 `json:"duration,omitempty"`
 }
 

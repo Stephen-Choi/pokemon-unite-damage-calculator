@@ -25,11 +25,15 @@ func NewDrainCrown() (drainCrown *DrainCrown, err error) {
 	return
 }
 
+func (a *DrainCrown) GetName() string {
+	return "drain crown"
+}
+
 func (a *DrainCrown) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 
-func (a *DrainCrown) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *DrainCrown) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

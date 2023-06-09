@@ -32,6 +32,10 @@ func NewElectroweb(level int) (move *Electroweb, err error) {
 	return
 }
 
+func (move *Electroweb) GetName() string {
+	return "electroweb"
+}
+
 func (move *Electroweb) CanCriticallyHit() bool {
 	return false
 }
@@ -50,9 +54,10 @@ func (move *Electroweb) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 	damage := 0.36*originalStats.SpecialAttack + 11*float64(originalStats.Level-1) + 350
 
 	result = attack.Result{
-		AttackOption: attack.Move1,
-		AttackType:   attack.SpecialAttack,
-		DamageDealt:  damage,
+		AttackOption:    attack.Move1,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

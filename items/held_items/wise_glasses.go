@@ -26,13 +26,17 @@ func NewWiseGlasses() (wiseGlasses *WiseGlasses, err error) {
 	return
 }
 
+func (a *WiseGlasses) GetName() string {
+	return "wise glasses"
+}
+
 func (a *WiseGlasses) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	// Wise Glasses increases Special Attack by 7%
 	a.SpecialAttack += originalStats.SpecialAttack * 0.07
 	return a.Stats
 }
 
-func (a *WiseGlasses) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *WiseGlasses) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

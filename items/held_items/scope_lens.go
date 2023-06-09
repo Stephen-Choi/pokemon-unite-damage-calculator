@@ -27,11 +27,15 @@ func NewScopeLens() (scopeLens *ScopeLens, err error) {
 	return
 }
 
+func (item *ScopeLens) GetName() string {
+	return "scope lens"
+}
+
 func (item *ScopeLens) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-func (item *ScopeLens) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *ScopeLens) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Skip if item activation is on cooldown
 	if item.isOnCooldown(elapsedTime) {
 		onCooldown = true
@@ -46,7 +50,7 @@ func (item *ScopeLens) Activate(originalStats stats.Stats, elapsedTime float64, 
 	// Perform Scope Lens effect
 	extraDamage := 0.75 * float64(originalStats.Attack)
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:   attack.SimpleAdditionalDamage,
+		Type:   attack.SingleInstance,
 		Amount: extraDamage,
 	}
 

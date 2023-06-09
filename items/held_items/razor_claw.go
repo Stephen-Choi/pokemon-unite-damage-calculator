@@ -30,12 +30,15 @@ func NewRazorClaw() (razorClaw *RazorClaw, err error) {
 	return
 }
 
+func (item *RazorClaw) GetName() string {
+	return "razor claw"
+}
+
 func (item *RazorClaw) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
 
-// TODO CHANGE THE COOLDOWN ON THIS TO BE APPLICALBE IF IT'S IN THE DURATION TIME...
-func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	if !item.isActive(elapsedTime) {
 		item.active = false
 	}
@@ -50,11 +53,11 @@ func (item *RazorClaw) Activate(originalStats stats.Stats, elapsedTime float64, 
 	if attackOption != attack.Move1 && attackOption != attack.Move2 {
 		return // early return, don't trigger cooldown
 	}
-	// CONTINUE HERE
+
 	// Perform Razor Claw effect
 	extraDamage := 20.0 + 0.5*float64(originalStats.Attack)
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:        attack.SimpleAdditionalDamage,
+		Type:        attack.SingleInstance,
 		Amount:      extraDamage,
 		DurationEnd: lo.ToPtr(time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration + elapsedTime)),
 	}

@@ -25,11 +25,15 @@ func NewShellBell() (shellBell *ShellBell, err error) {
 	return
 }
 
+func (a *ShellBell) GetName() string {
+	return "shell bell"
+}
+
 func (a *ShellBell) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
 
-func (a *ShellBell) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *ShellBell) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

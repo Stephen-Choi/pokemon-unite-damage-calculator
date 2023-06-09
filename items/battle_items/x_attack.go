@@ -26,6 +26,10 @@ func NewXAttack() (xAttack *XAttack, err error) {
 	return
 }
 
+func (item *XAttack) GetName() string {
+	return "x attack"
+}
+
 // Activate activates the battle item
 func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	// Skip if item activation is on cooldown
@@ -37,7 +41,7 @@ func (item *XAttack) Activate(originalStats stats.Stats, elapsedTime float64) (o
 	// Apply stat buffs
 	xAttackStatsBuff := item.SpecialEffect.StatsBuff
 	buff := stats.Buff{
-		Stats: stats.Stats{
+		StatIncrease: stats.Stats{
 			Attack:        xAttackStatsBuff.AttackBuff,
 			SpecialAttack: xAttackStatsBuff.SpecialAttackBuff,
 			AttackSpeed:   xAttackStatsBuff.AttackSpeedBuff,
