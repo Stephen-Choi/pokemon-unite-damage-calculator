@@ -3,6 +3,7 @@ package attack
 import (
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 	"github.com/samber/lo"
 	"math"
 )
@@ -59,10 +60,26 @@ func (d Debuff) Exists() bool {
 type AdditionalDamageType string
 
 const (
-	SingleInstance     AdditionalDamageType = "singleInstance"     // SingleInstance is a single instance of additional damage
-	PercentDamageBoost AdditionalDamageType = "percentDamageBoost" // PercentDamageBoost is a damage boost (as a percent increase) that lasts for a certain amount of time
-	RemainingEnemyHp   AdditionalDamageType = "remainingEnemyHp"   // RemainingEnemyHp is additional damage that scales with the enemy's remaining HP
+	SingleInstance                                    AdditionalDamageType = "singleInstance"                                    // SingleInstance is a single instance of additional damage
+	PercentDamageBoost                                AdditionalDamageType = "percentDamageBoost"                                // PercentDamageBoost is a damage boost (as a percent increase) that lasts for a certain amount of time
+	RemainingEnemyHp                                  AdditionalDamageType = "remainingEnemyHp"                                  // RemainingEnemyHp is additional damage that scales with the enemy's remaining HP
+	DefenderAndSupporterDamageBoostAgainstWildPokemon AdditionalDamageType = "defenderAndSupporterDamageBoostAgainstWildPokemon" // DefenderAndSupporterDamageBoost is a damage boost that applies to defenders and supporters on the team against wild pokemon
 )
+
+func GetDefenderAndSupporterWildDamageBoost(level int) AdditionalDamage {
+	var damagePercentBoost float64
+	if level >= 9 {
+		damagePercentBoost = 0.2
+	} else {
+		damagePercentBoost = 0.1
+	}
+
+	return AdditionalDamage{
+		Type:        DefenderAndSupporterDamageBoostAgainstWildPokemon,
+		Amount:      damagePercentBoost,
+		DurationEnd: lo.ToPtr(float64(time.FullGameTimeInMilliseconds)),
+	}
+}
 
 // AdditionalDamage is a struct containing the type and amount of additional damage to be applied
 type AdditionalDamage struct {
@@ -87,7 +104,7 @@ func (a AllAdditionalDamage) Add(additionalDamageName string, additionalDamage A
 }
 
 // Calculate calculates the total additional damage
-func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stats.Stats) float64 {
+func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, attackOption Option, enemyStats stats.Stats, enemyIsWildPokemon bool) float64 {
 	totalAdditionalDamage := 0.0
 	for _, additionalDamage := range a {
 		switch additionalDamage.Type {
@@ -100,6 +117,10 @@ func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stat
 				totalAdditionalDamage += additionalDamage.Amount * enemyStats.Hp
 			} else {
 				totalAdditionalDamage += math.Min(additionalDamage.Amount*enemyStats.Hp, lo.FromPtr(additionalDamage.CappedAmount))
+			}
+		case DefenderAndSupporterDamageBoostAgainstWildPokemon:
+			if enemyIsWildPokemon && attackOption == Move1 || attackOption == BasicAttackOption {
+				totalAdditionalDamage += baseAttackDamage * additionalDamage.Amount
 			}
 		default:
 			panic("invalid additional damage type")

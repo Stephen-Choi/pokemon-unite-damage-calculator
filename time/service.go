@@ -1,7 +1,7 @@
 package time
 
-// fullGameTimeInMilliseconds is the full game time in milliseconds (10 minutes)
-const fullGameTimeInMilliseconds = 600000
+// FullGameTimeInMilliseconds is the full game time in milliseconds (10 minutes)
+const FullGameTimeInMilliseconds = 600000
 
 // ConvertSecondsToMilliseconds converts seconds to milliseconds
 func ConvertSecondsToMilliseconds(timeInSeconds float64) (timeInMilliseconds float64) {
@@ -9,7 +9,7 @@ func ConvertSecondsToMilliseconds(timeInSeconds float64) (timeInMilliseconds flo
 }
 
 func GetElapsedTimeFromRemainingTime(remainingTimeInSeconds int) (elapsedTimeInMilliseconds float64) {
-	return fullGameTimeInMilliseconds - ConvertSecondsToMilliseconds(float64(remainingTimeInSeconds))
+	return FullGameTimeInMilliseconds - ConvertSecondsToMilliseconds(float64(remainingTimeInSeconds))
 }
 
 // GetNewCooldown returns the new cooldown after applying a cooldown reduction

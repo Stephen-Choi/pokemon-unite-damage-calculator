@@ -162,7 +162,7 @@ func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.P
 	}
 
 	// Apply additional damage
-	totalAdditionalDamage := p.AllAdditionalDamage.Calculate(attackResult.BaseDamageDealt, enemyPokemon.GetStats())
+	totalAdditionalDamage := p.AllAdditionalDamage.Calculate(attackResult.BaseDamageDealt, attackResult.AttackOption, enemyPokemon.GetStats(), enemyPokemon.IsWild())
 	finalResult.AdditionalDamageDealt = totalAdditionalDamage
 
 	// Round to 2 decimal places
@@ -218,4 +218,9 @@ func (p *GeneralPokemon) GetAllAdditionalDamage() attack.AllAdditionalDamage {
 func (p *GeneralPokemon) ClearExpiredEffects(elapsedTime float64) {
 	p.Stats.RemoveExpiredBuffs(p.Buffs, elapsedTime)
 	p.AllAdditionalDamage.ClearCompletedAdditionalDamageEffects(elapsedTime)
+}
+
+// AddAdditionalDamage clears expired buffs and additional damage effects
+func (p *GeneralPokemon) AddAdditionalDamage(additionalDamageName string, additionalDamage attack.AdditionalDamage) {
+	p.AllAdditionalDamage.Add(additionalDamageName, additionalDamage)
 }
