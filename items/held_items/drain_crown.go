@@ -25,6 +25,10 @@ func NewDrainCrown() (drainCrown *DrainCrown, err error) {
 	return
 }
 
+func (a *DrainCrown) GetName() string {
+	return "drain crown"
+}
+
 func (a *DrainCrown) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

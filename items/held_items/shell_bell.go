@@ -25,6 +25,10 @@ func NewShellBell() (shellBell *ShellBell, err error) {
 	return
 }
 
+func (a *ShellBell) GetName() string {
+	return "shell bell"
+}
+
 func (a *ShellBell) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

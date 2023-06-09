@@ -7,8 +7,8 @@ import (
 
 const (
 	RayquazaName         = "rayquaza"
-	RegielekiNeutralName = "regieleki_neutral"
-	RegielekiEnemyName   = "regieleki_enemy"
+	RegielekiNeutralName = "regieleki-neutral"
+	RegielekiEnemyName   = "regieleki-enemy"
 	BottomRegis          = "regis"
 )
 
@@ -103,11 +103,11 @@ func (w *WildPokemon) ApplyDamage(damageTaken float64) {
 }
 
 type JsonStats struct {
-	RemainingTime int `json:"time_remaining"`
-	Hp            int `json:"hp"`
-	Attack        int `json:"attack"`
-	Defense       int `json:"defense"`
-	SpDefense     int `json:"sp_defense"`
+	RemainingTime  int `json:"time_remaining"`
+	Hp             int `json:"hp"`
+	Attack         int `json:"attack"`
+	Defense        int `json:"defense"`
+	SpecialDefense int `json:"sp. def"`
 }
 
 func (j *JsonStats) ToStats() stats.Stats {
@@ -115,6 +115,6 @@ func (j *JsonStats) ToStats() stats.Stats {
 		Hp:             float64(j.Hp),
 		Attack:         float64(j.Attack),
 		Defense:        float64(j.Defense),
-		SpecialDefense: float64(j.SpDefense),
+		SpecialDefense: float64(j.SpecialDefense),
 	}
 }

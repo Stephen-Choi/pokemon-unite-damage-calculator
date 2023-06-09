@@ -7,6 +7,10 @@ import (
 	"math"
 )
 
+const (
+	BasicAttackName = "basic attack"
+)
+
 type Type string
 
 const (
@@ -23,7 +27,6 @@ const (
 	UniteMove              Option = "uniteMove"
 	BasicAttackOption      Option = "basicAttack"
 	CriticalHitBasicAttack Option = "criticalHitBasicAttack"
-	CannotAct              Option = "cannotAct" // still in attack animation or attack lag
 )
 
 // DebuffEffect is an enum for the different types of status conditions a pokemon can inflict
@@ -56,63 +59,36 @@ func (d Debuff) Exists() bool {
 type AdditionalDamageType string
 
 const (
-	SimpleAdditionalDamage AdditionalDamageType = "single"             // SingleAdditionalDamage is a single instance of additional damage
-	PercentDamageBoost     AdditionalDamageType = "percentDamageBoost" // PercentDamageBoost is a damage boost (as a percent increase) that lasts for a certain amount of time
-	RemainingEnemyHp       AdditionalDamageType = "remainingEnemyHp"   // RemainingEnemyHp is additional damage that scales with the enemy's remaining HP
+	SingleInstance     AdditionalDamageType = "singleInstance"     // SingleInstance is a single instance of additional damage
+	PercentDamageBoost AdditionalDamageType = "percentDamageBoost" // PercentDamageBoost is a damage boost (as a percent increase) that lasts for a certain amount of time
+	RemainingEnemyHp   AdditionalDamageType = "remainingEnemyHp"   // RemainingEnemyHp is additional damage that scales with the enemy's remaining HP
 )
-
-// AdditionalDamageName is the name of the origin of the additional damage to be applied for damage dealing moves
-type AdditionalDamageName string
-
-const (
-	Move1AdditionalDamage       AdditionalDamageName = "move1AdditionalDamage"
-	Move2AdditionalDamage       AdditionalDamageName = "move2AdditionalDamage"
-	UniteMoveAdditionalDamage   AdditionalDamageName = "uniteMoveAdditionalDamage"
-	BasicAttackAdditionalDamage AdditionalDamageName = "basicAttackAdditionalDamage"
-	BattleItemAdditionalDamage  AdditionalDamageName = "battleItemAdditionalDamage"
-	HeldItem1AdditionalDamage   AdditionalDamageName = "heldItem1AdditionalDamage"
-	HeldItem2AdditionalDamage   AdditionalDamageName = "heldItem2AdditionalDamage"
-	HeldItem3AdditionalDamage   AdditionalDamageName = "heldItem3AdditionalDamage"
-)
-
-func GetAdditionalDamageName(index int) AdditionalDamageName {
-	switch index {
-	case 0:
-		return HeldItem1AdditionalDamage
-	case 1:
-		return HeldItem2AdditionalDamage
-	case 2:
-		return HeldItem3AdditionalDamage
-	default:
-		return ""
-	}
-}
 
 // AdditionalDamage is a struct containing the type and amount of additional damage to be applied
 type AdditionalDamage struct {
-	Type         AdditionalDamageType
-	Amount       float64
-	CappedAmount *float64 // only applicable to certain held items (i.e muscle band)
-	DurationEnd  *float64 // only applicable to certain held items (i.e energy amplifier)
+	Type         AdditionalDamageType `json:"type"`
+	Amount       float64              `json:"amount"`
+	CappedAmount *float64             `json:"capped-amount,omitempty"` // only applicable to certain held items (i.e muscle band)
+	DurationEnd  *float64             `json:"duration-end,omitempty"`  // only applicable to certain held items (i.e energy amplifier)
 }
 
 func (a AdditionalDamage) Exists() bool {
 	return a != AdditionalDamage{}
 }
 
-type AllAdditionalDamage map[AdditionalDamageName]AdditionalDamage
+type AllAdditionalDamage map[string]AdditionalDamage
 
 func NewAllAdditionalDamage() AllAdditionalDamage {
 	return make(AllAdditionalDamage)
 }
 
-func (a AllAdditionalDamage) Add(additionalDamageName AdditionalDamageName, additionalDamage AdditionalDamage) {
+func (a AllAdditionalDamage) Add(additionalDamageName string, additionalDamage AdditionalDamage) {
 	a[additionalDamageName] = additionalDamage
 }
 
 // Calculate calculates the total additional damage
 func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stats.Stats) float64 {
-	// Damage must occur for additional damage boosts to be applied
+	// BaseDamage must occur for additional damage boosts to be applied
 	if baseAttackDamage == 0.0 {
 		return 0.0
 	}
@@ -120,7 +96,7 @@ func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stat
 	totalAdditionalDamage := 0.0
 	for _, additionalDamage := range a {
 		switch additionalDamage.Type {
-		case SimpleAdditionalDamage:
+		case SingleInstance:
 			totalAdditionalDamage += additionalDamage.Amount
 		case PercentDamageBoost:
 			totalAdditionalDamage += baseAttackDamage * additionalDamage.Amount
@@ -134,12 +110,10 @@ func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stat
 			panic("invalid additional damage type")
 		}
 	}
-	a.clearAppliedAdditionalDamage()
 	return totalAdditionalDamage
 }
 
-// clearAppliedAdditionalDamage clears any applied additional damage that only needs to be applied once
-func (a AllAdditionalDamage) clearAppliedAdditionalDamage() {
+func (a AllAdditionalDamage) clearSingleInstanceAppliedAdditionalDamage() {
 	for additionalDamageName, additionalDamage := range a {
 		if additionalDamage.DurationEnd == nil {
 			delete(a, additionalDamageName)
@@ -147,7 +121,7 @@ func (a AllAdditionalDamage) clearAppliedAdditionalDamage() {
 	}
 }
 
-func (a AllAdditionalDamage) ClearExpiredDurationAdditionalDamage(elapsedTime float64) {
+func (a AllAdditionalDamage) clearExpiredDurationAdditionalDamage(elapsedTime float64) {
 	for additionalDamageName, additionalDamage := range a {
 		if additionalDamage.DurationEnd != nil && *additionalDamage.DurationEnd < elapsedTime {
 			delete(a, additionalDamageName)
@@ -155,11 +129,19 @@ func (a AllAdditionalDamage) ClearExpiredDurationAdditionalDamage(elapsedTime fl
 	}
 }
 
+// ClearCompletedAdditionalDamageEffects clears any additional damage effects that have been completed
+func (a AllAdditionalDamage) ClearCompletedAdditionalDamageEffects(elapsedTime float64) {
+	a.clearExpiredDurationAdditionalDamage(elapsedTime)
+	a.clearSingleInstanceAppliedAdditionalDamage()
+}
+
 type OverTimeDamage struct {
-	Damage          float64
-	DamageFrequency float64 // time in milliseconds to apply the damage
-	DurationStart   float64 // time in milliseconds when the overtime damage should start
-	DurationEnd     float64 // time in milliseconds when the overtime damage should end
+	Source          string  `json:"source"`
+	AttackType      Type    `json:"attack-type"`
+	BaseDamage      float64 `json:"base-damage"`
+	DamageFrequency float64 `json:"damage-frequency"` // time in milliseconds to apply the damage
+	DurationStart   float64 `json:"duration-start"`   // time in milliseconds when the overtime damage should start
+	DurationEnd     float64 `json:"duration-end"`     // time in milliseconds when the overtime damage should end
 }
 
 func (o OverTimeDamage) Exists() bool {
@@ -179,9 +161,11 @@ func (e ExecutePercentDamage) Exists() bool {
 type Result struct {
 	AttackType             Type
 	AttackOption           Option
-	DamageDealt            float64
+	AttackName             string
+	BaseDamageDealt        float64
+	AdditionalDamageDealt  float64
 	OvertimeDamage         OverTimeDamage
-	AdditionalDamage       AdditionalDamage
+	AdditionalDamageEffect AdditionalDamage
 	Buff                   stats.Buff
 	Debuffs                []Debuff
 	AttackDuration         float64 // time in milliseconds that the attack took to complete TODO: set this for all moves if ever someone gets the frame data for each move
@@ -204,6 +188,7 @@ type BasicAttack interface {
 }
 
 type SkillMove interface {
+	GetName() string
 	CanCriticallyHit() bool
 	IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool                                                // Check if the skill move is on cooldown
 	Activate(pokemonStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move

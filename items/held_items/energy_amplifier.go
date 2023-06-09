@@ -29,6 +29,10 @@ func NewEnergyAmplifier() (energyAmplifier *EnergyAmplifier, err error) {
 	return
 }
 
+func (item *EnergyAmplifier) GetName() string {
+	return "energy amplifier"
+}
+
 func (item *EnergyAmplifier) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
@@ -44,6 +48,8 @@ func (item *EnergyAmplifier) Activate(originalStats stats.Stats, elapsedTime flo
 	if attackOption != attack.UniteMove {
 		return // early return, don't trigger cooldown
 	}
+
+	fmt.Println("EnergyAmplifier.Activate: activated")
 
 	// Perform energy amplifier effect
 	effect.AdditionalDamage = attack.AdditionalDamage{

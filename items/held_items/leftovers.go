@@ -25,6 +25,10 @@ func NewLeftovers() (leftovers *Leftovers, err error) {
 	return
 }
 
+func (a *Leftovers) GetName() string {
+	return "leftovers"
+}
+
 func (a *Leftovers) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

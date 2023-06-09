@@ -36,6 +36,10 @@ func NewThunder(level int) (move *Thunder, err error) {
 	return
 }
 
+func (move *Thunder) GetName() string {
+	return "thunder"
+}
+
 func (move *Thunder) CanCriticallyHit() bool {
 	return false
 }
@@ -51,7 +55,7 @@ func (move *Thunder) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) 
 }
 
 func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	// Damage calculation
+	// BaseDamage calculation
 	damagePerHit := 0.2*originalStats.SpecialAttack + 5*float64(originalStats.Level-1) + 210
 	damagePerHit = math.Floor(damagePerHit*100) / 100
 
@@ -68,9 +72,12 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 
 	result = attack.Result{
 		AttackOption: attack.Move1,
+		AttackName:   move.GetName(),
 		AttackType:   attack.SpecialAttack,
 		OvertimeDamage: attack.OverTimeDamage{
-			Damage:          damagePerHit,
+			Source:          move.GetName(),
+			AttackType:      attack.SpecialAttack,
+			BaseDamage:      damagePerHit,
 			DamageFrequency: damageFrequency,
 			DurationStart:   elapsedTime,
 			DurationEnd:     elapsedTime + moveDuration,

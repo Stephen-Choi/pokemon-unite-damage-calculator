@@ -27,6 +27,10 @@ func NewAttackWeight(numStacks int) (attackWeight *AttackWeight, err error) {
 	return
 }
 
+func (a *AttackWeight) GetName() string {
+	return "attack weight"
+}
+
 func (a *AttackWeight) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	stackBoosts := a.numStacks * a.SpecialEffect.Stack.Amount
 	a.Stats.Attack += float64(stackBoosts)

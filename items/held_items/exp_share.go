@@ -25,6 +25,10 @@ func NewExpShare() (expShare *ExpShare, err error) {
 	return
 }
 
+func (a *ExpShare) GetName() string {
+	return "exp share"
+}
+
 func (a *ExpShare) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

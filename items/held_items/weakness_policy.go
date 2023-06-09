@@ -25,6 +25,10 @@ func NewWeaknessPolicy() (weaknessPolicy *WeaknessPolicy, err error) {
 	return
 }
 
+func (a *WeaknessPolicy) GetName() string {
+	return "weakness policy"
+}
+
 func (a *WeaknessPolicy) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

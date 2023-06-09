@@ -31,6 +31,10 @@ func NewFluffyTail() (fluffyTail *FluffyTail, err error) {
 	return
 }
 
+func (item *FluffyTail) GetName() string {
+	return "fluffy tail"
+}
+
 // Activate activates the battle item
 func (item *FluffyTail) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	// Skip if item activation is on cooldown
@@ -42,7 +46,7 @@ func (item *FluffyTail) Activate(originalStats stats.Stats, elapsedTime float64)
 	// Additional damage formula: 100% attack + 60% sp. attack + 10(level-1) + 100"
 	damage := 1.0*originalStats.Attack + 0.6*originalStats.SpecialAttack + 10.0*(float64(originalStats.Level-1)) + 100.0
 	additionalDamage := attack.AdditionalDamage{
-		Type:        attack.SimpleAdditionalDamage,
+		Type:        attack.SingleInstance,
 		Amount:      damage,
 		DurationEnd: lo.ToPtr(time.ConvertSecondsToMilliseconds(item.SpecialEffect.AdditionalDamage.Duration) + elapsedTime),
 	}

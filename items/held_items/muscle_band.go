@@ -28,6 +28,10 @@ func NewMuscleBand() (muscleBand *MuscleBand, err error) {
 	return
 }
 
+func (item *MuscleBand) GetName() string {
+	return "muscle band"
+}
+
 func (item *MuscleBand) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }

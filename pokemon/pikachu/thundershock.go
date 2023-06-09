@@ -33,6 +33,10 @@ func NewThunderShock(level int) (move *ThunderShock, err error) {
 	return
 }
 
+func (move *ThunderShock) GetName() string {
+	return "thunder shock"
+}
+
 func (move *ThunderShock) CanCriticallyHit() bool {
 	return false
 }
@@ -51,9 +55,10 @@ func (move *ThunderShock) Activate(stats stats.Stats, enemyPokemon enemy.Pokemon
 	damage := 0.75*stats.SpecialAttack + 21*float64(stats.Level-1) + 390
 
 	result = attack.Result{
-		AttackOption: attack.Move2,
-		AttackType:   attack.SpecialAttack,
-		DamageDealt:  damage,
+		AttackOption:    attack.Move2,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

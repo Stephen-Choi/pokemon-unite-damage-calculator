@@ -27,6 +27,10 @@ func NewChoiceSpecs() (choiceSpecs *ChoiceSpecs, err error) {
 	return
 }
 
+func (item *ChoiceSpecs) GetName() string {
+	return "choice specs"
+}
+
 func (item *ChoiceSpecs) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
@@ -46,7 +50,7 @@ func (item *ChoiceSpecs) Activate(originalStats stats.Stats, elapsedTime float64
 	// Perform choice specs effect
 	extraDamage := 60.0 + 0.4*float64(originalStats.SpecialAttack)
 	effect.AdditionalDamage = attack.AdditionalDamage{
-		Type:   attack.SimpleAdditionalDamage,
+		Type:   attack.SingleInstance,
 		Amount: extraDamage,
 	}
 

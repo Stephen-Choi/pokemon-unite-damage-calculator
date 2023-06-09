@@ -35,6 +35,10 @@ func NewThunderbolt(level int) (move *Thunderbolt, err error) {
 	return
 }
 
+func (move *Thunderbolt) GetName() string {
+	return "thunderbolt"
+}
+
 func (move *Thunderbolt) CanCriticallyHit() bool {
 	return false
 }
@@ -58,9 +62,10 @@ func (move *Thunderbolt) Activate(originalStats stats.Stats, enemyPokemon enemy.
 	}
 
 	result = attack.Result{
-		AttackOption: attack.Move2,
-		AttackType:   attack.SpecialAttack,
-		DamageDealt:  damage,
+		AttackOption:    attack.Move2,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damage,
 	}
 	move.setLastUsed(elapsedTime)
 	return

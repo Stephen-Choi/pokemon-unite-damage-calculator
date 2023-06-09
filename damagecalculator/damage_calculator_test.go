@@ -44,7 +44,7 @@ func setupDamageCalculatorScenario() (attackingPokemon map[string]pokemon.Pokemo
 func Test_NewDamageCalculator(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		attackingPokemon, enemy := setupDamageCalculatorScenario()
-		damageCalc := NewDamageCalculator(attackingPokemon, enemy, nil)
+		damageCalc := NewDamageCalculator(attackingPokemon, enemy, nil, 180000)
 
 		// Assert damage calculator is setup as expected
 		assert.Equal(t, 1, len(damageCalc.attackingPokemon))
@@ -59,7 +59,7 @@ func Test_NewDamageCalculator(t *testing.T) {
 func Test_CalculateRip(t *testing.T) {
 	t.Run("simple rip with one attacking pokemon", func(t *testing.T) {
 		attackingPokemon, enemy := setupDamageCalculatorScenario()
-		damageCalc := NewDamageCalculator(attackingPokemon, enemy, nil)
+		damageCalc := NewDamageCalculator(attackingPokemon, enemy, nil, 180000)
 
 		// Test rip calculation works
 		result, err := damageCalc.CalculateRip()

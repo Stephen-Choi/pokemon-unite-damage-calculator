@@ -25,6 +25,10 @@ func NewBuddyBarrier() (buddyBarrier *BuddyBarrier, err error) {
 	return
 }
 
+func (a *BuddyBarrier) GetName() string {
+	return "buddy barrier"
+}
+
 func (a *BuddyBarrier) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

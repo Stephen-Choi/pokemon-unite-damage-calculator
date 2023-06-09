@@ -7,6 +7,7 @@ import (
 	helditems "github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/time"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -91,15 +92,18 @@ func HandleCalculateRip(c *gin.Context) {
 		return
 	}
 
+	// Setup elapsed time
+	elapsedTime := time.GetElapsedTimeFromRemainingTime(damageCalculationRequest.TimeRemaining)
+
 	// Setup team buffs
-	teamBuffs, err := stats.GetTeamBuffs(damageCalculationRequest.TeamBuffs, damageCalculationRequest.TimeRemaining)
+	teamBuffs, err := stats.GetTeamBuffs(damageCalculationRequest.TeamBuffs, elapsedTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Setup damage calculator
-	damageCalculator := damagecalculator.NewDamageCalculator(attackingPokemon, enemy, teamBuffs)
+	damageCalculator := damagecalculator.NewDamageCalculator(attackingPokemon, enemy, teamBuffs, elapsedTime)
 
 	// Calculate damage
 	response, err := damageCalculator.CalculateRip()

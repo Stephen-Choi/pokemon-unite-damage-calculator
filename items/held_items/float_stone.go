@@ -25,6 +25,10 @@ func NewFloatStone() (floatStone *FloatStone, err error) {
 	return
 }
 
+func (a *FloatStone) GetName() string {
+	return "float stone"
+}
+
 func (a *FloatStone) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

@@ -1,31 +1,47 @@
 package damagecalculator
 
 import (
-	"fmt"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/enemy"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 	"math"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
+const (
+	CannotAct     = "cannot act" // still in attack animation or attack lag
+	UseBattleItem = "use battle item"
+)
+
+type PokemonActionResult struct {
+	ActionName       string  `json:"action-name"` // Can be either an attack, the use of a battle item, or unable to act
+	BaseDamage       float64 `json:"base-damage,omitempty"`
+	CritDamage       float64 `json:"crit-damage,omitempty"`
+	AdditionalDamage float64 `json:"additional-damage,omitempty"`
+	OvertimeDamage   float64 `json:"overtime-damage,omitempty"`
+	ExecutionDamage  float64 `json:"execution-damage-dealt,omitempty"`
+	TotalDamageDealt float64 `json:"total-damage-dealt"`
+}
+
 type State struct {
-	PokemonActions   map[string]attack.Option           `json:"pokemon_actions"`
-	PokemonBuffs     map[string]stats.Buffs             `json:"pokemon_buffs"`
-	PokemonTeamBuffs stats.Buffs                        `json:"pokemon_team_buffs"`
-	InflictedDebuffs []attack.Debuff                    `json:"inflicted_debuffs"`
-	OvertimeDamage   map[string][]attack.OverTimeDamage `json:"overtime_damage"`
-	EnemyHealth      float64                            `json:"enemy_health"`
+	PokemonActions          map[string]PokemonActionResult        `json:"pokemon-actions"`
+	PokemonBuffs            map[string]stats.Buffs                `json:"pokemon-buffs"`
+	PokemonAdditionalDamage map[string]attack.AllAdditionalDamage `json:"pokemon-additional-damage"`
+	OvertimeDamage          map[string][]attack.OverTimeDamage    `json:"overtime-damage"`
+	PokemonTeamBuffs        stats.Buffs                           `json:"pokemon-team-buffs"`
+	InflictedDebuffs        []attack.Debuff                       `json:"inflicted-debuffs"`
+	EnemyHealth             float64                               `json:"enemy-health"`
 }
 
 // StateLog is a map of time to state details
-type StateLog map[float64]State
+type StateLog map[string]State
 
 type Result struct {
-	TotalTime float64 `json:"total_time"`
-	StateLog  `json:"state_log"`
+	TotalTime float64  `json:"total_time"`
+	StateLog  StateLog `json:"state_log"`
 }
 
 type DamageCalculator struct {
@@ -41,7 +57,7 @@ type DamageCalculator struct {
 	elapsedTime float64
 }
 
-func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokemon enemy.Pokemon, teamBuffs stats.Buffs) *DamageCalculator {
+func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokemon enemy.Pokemon, teamBuffs stats.Buffs, elapsedTime float64) *DamageCalculator {
 	// Set up attacks that can crit
 	attacksThatCanCrit := make(map[string][]attack.Option)
 	for _, pokemon := range attackingPokemon {
@@ -56,6 +72,8 @@ func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokem
 		overtimeDamageByPokemon:   make(map[string][]attack.OverTimeDamage),
 		timeOfNextAvailableAction: make(map[string]float64),
 		pokemonPrevAction:         make(map[string]attack.Option),
+		inflictedDebuffs:          []attack.Debuff{},
+		elapsedTime:               elapsedTime,
 	}
 }
 
@@ -65,6 +83,7 @@ func NewDamageCalculator(attackingPokemon map[string]pokemon.Pokemon, enemyPokem
 func (d *DamageCalculator) CalculateRip() (Result, error) {
 	// Set up state log to capture all states during the rip calculation
 	stateLog := make(StateLog)
+	startingRipTime := d.elapsedTime
 
 	// Keep calculating until the enemy is defeated
 	for !d.enemyPokemon.IsDefeated() {
@@ -73,16 +92,16 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			d.elapseTime()
 		}
 
-		fmt.Println("Elapsed time:", d.elapsedTime)
-
 		// Set up new state for the state log
 		state := State{
-			PokemonActions: make(map[string]attack.Option),
-			PokemonBuffs:   make(map[string]stats.Buffs),
+			PokemonActions:          make(map[string]PokemonActionResult),
+			PokemonBuffs:            make(map[string]stats.Buffs),
+			PokemonAdditionalDamage: make(map[string]attack.AllAdditionalDamage),
 		}
 
 		// Randomly select a pokemon to act (since it's a map, range will be random)
 		for _, attackingPokemon := range d.attackingPokemon {
+			attackingPokemon.ClearExpiredEffects(d.elapsedTime)
 			attackingPokemonName := attackingPokemon.GetName()
 
 			// Check what moves are available
@@ -91,17 +110,58 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 				panic(err) // TODO: handle error
 			}
 
-			// Check if the pokemon can act
-			if !d.canPokemonAct(attackingPokemonName, availableAttacks) {
-				//fmt.Println("Pokemon cannot act:", attackingPokemonName)
-				state.PokemonActions[attackingPokemonName] = attack.CannotAct
+			// If battle item is available, default to always activating it (take's up this pokemon's action)
+			// Note: this can be activated during a move, so perform this before checking if the pokemon can act
+			if isBattleItemAvailable {
+				attackingPokemon.ActivateBattleItem(d.elapsedTime)
+				state.PokemonActions[attackingPokemonName] = PokemonActionResult{ActionName: UseBattleItem}
+
+				// TODO REFACTOR THIS (BEING USED IN 3 PLACES)
+
+				// Need to make a copy of the buffs because the returned values are pointers
+				pokemonBuffs := attackingPokemon.GetBuffs()
+				pokemonBuffsCopy := make(map[string]stats.Buff)
+				for pokemonName, buff := range pokemonBuffs {
+					pokemonBuffsCopy[pokemonName] = buff
+				}
+				state.PokemonBuffs[attackingPokemonName] = pokemonBuffsCopy
+
+				// Need to make a copy of the additional damage because the returned values are pointers
+				pokemonAllAdditionalDamage := attackingPokemon.GetAllAdditionalDamage()
+
+				allAdditionalDamage := make(map[string]attack.AdditionalDamage)
+				for additionalDamageName, additionalDamage := range pokemonAllAdditionalDamage {
+					allAdditionalDamage[additionalDamageName] = additionalDamage
+				}
+				state.PokemonAdditionalDamage[attackingPokemonName] = allAdditionalDamage
 				continue
 			}
 
-			// If battle item is available, default to always activating it
-			if isBattleItemAvailable {
-				attackingPokemon.ActivateBattleItem(d.elapsedTime)
+			// Check if the pokemon can act
+			if !d.canPokemonAct(attackingPokemonName, availableAttacks) {
+				state.PokemonActions[attackingPokemonName] = PokemonActionResult{ActionName: CannotAct}
+
+				// TODO REFACTOR THIS (BEING USED IN 3 PLACES)
+
+				// Need to make a copy of the buffs because the returned values are pointers
+				pokemonBuffs := attackingPokemon.GetBuffs()
+				pokemonBuffsCopy := make(map[string]stats.Buff)
+				for pokemonName, buff := range pokemonBuffs {
+					pokemonBuffsCopy[pokemonName] = buff
+				}
+				state.PokemonBuffs[attackingPokemonName] = pokemonBuffsCopy
+
+				// Need to make a copy of the additional damage because the returned values are pointers
+				pokemonAllAdditionalDamage := attackingPokemon.GetAllAdditionalDamage()
+
+				allAdditionalDamage := make(map[string]attack.AdditionalDamage)
+				for additionalDamageName, additionalDamage := range pokemonAllAdditionalDamage {
+					allAdditionalDamage[additionalDamageName] = additionalDamage
+				}
+				state.PokemonAdditionalDamage[attackingPokemonName] = allAdditionalDamage
+				continue
 			}
+
 			// Perform the attack
 			bestAction := determineBestAction(availableAttacks)
 			attackResult, err := attackingPokemon.Attack(bestAction, d.enemyPokemon, d.elapsedTime)
@@ -109,12 +169,10 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 				panic(err) // TODO: handle error
 			}
 
-			// Check if any overtime damage occured
+			// Check if any overtime damage occurred
 			if attackResult.OvertimeDamage.Exists() {
 				d.overtimeDamageByPokemon[attackingPokemonName] = append(d.overtimeDamageByPokemon[attackingPokemonName], attackResult.OvertimeDamage)
 			}
-			// Calculate total overtime damage to be inflicted
-			overtimeDamageForPokemon := d.calculateOvertimeDamage(attackingPokemonName, d.elapsedTime)
 
 			// TODO: if any team buffs occured, add them here...
 
@@ -124,21 +182,26 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 			}
 
 			// Check for crit
+			var critDamage float64
 			if d.shouldCrit(attackingPokemon.GetName(), bestAction, d.elapsedTime) {
-				critDamage := attackingPokemon.GetStats(d.elapsedTime).CriticalHitDamage
-				attackResult.DamageDealt = attackResult.DamageDealt * critDamage // Applies crit damage
+				critDamageMultiplier := attackingPokemon.GetStats().CriticalHitDamage
+				critDamage = (attackResult.BaseDamageDealt * critDamageMultiplier) - attackResult.BaseDamageDealt
 			}
 
 			// Determine damage to be taken by enemy
-			totalDamageDealt := attackResult.DamageDealt + overtimeDamageForPokemon
 			enemyStatsAfterDebuffs := attack.ApplyDebuffs(attackingPokemonName, d.enemyPokemon, d.inflictedDebuffs)
-			damageTakenByEnemy := calculateDamageTaken(totalDamageDealt, enemyStatsAfterDebuffs, attackResult.AttackType)
+			baseDamageDealt := calculateDamageDealt(attackResult.BaseDamageDealt, enemyStatsAfterDebuffs, attackResult.AttackType)
+			critDamageDealt := calculateDamageDealt(critDamage, enemyStatsAfterDebuffs, attackResult.AttackType)
+			additionalDamageDealt := calculateDamageDealt(attackResult.AdditionalDamageDealt, enemyStatsAfterDebuffs, attackResult.AttackType)
+			overtimeDamageDealt := d.calculateOvertimeDamage(attackingPokemonName, enemyStatsAfterDebuffs, d.elapsedTime)
+			totalDamageDealt := baseDamageDealt + critDamageDealt + additionalDamageDealt + overtimeDamageDealt
 
 			// Apply damage to enemy's health
-			d.enemyPokemon.ApplyDamage(damageTakenByEnemy)
+			d.enemyPokemon.ApplyDamage(totalDamageDealt)
 
 			// Apply any execution damage if required (applies after damage is dealt from the move)
 			// Ref on how to calculate execution damage: https://unite-db.com/faq/elementary-mechanics#Missing-HP
+			var executionDamageDealt float64
 			if attackResult.ExecutionPercentDamage.Exists() {
 				var executionDamage float64
 				if attackResult.ExecutionPercentDamage.CappedDamage != 0 {
@@ -147,38 +210,65 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 					executionDamage = d.enemyPokemon.GetMissingHealth() * attackResult.ExecutionPercentDamage.Percent
 				}
 
-				executionDamageTakenByEnemy := calculateDamageTaken(executionDamage, enemyStatsAfterDebuffs, attackResult.AttackType)
-				d.enemyPokemon.ApplyDamage(executionDamageTakenByEnemy)
-				fmt.Println("Pokemon execution damage:", executionDamageTakenByEnemy)
+				executionDamageDealt = calculateDamageDealt(executionDamage, enemyStatsAfterDebuffs, attackResult.AttackType)
+				d.enemyPokemon.ApplyDamage(executionDamageDealt)
+				totalDamageDealt += executionDamageDealt
 			}
 
-			fmt.Println("Pokemon attack:", bestAction)
-			fmt.Println("Pokemon skill damage:", damageTakenByEnemy)
-
-			fmt.Println("Enemy health: ", d.enemyPokemon.GetRemainingHealth())
-
 			// Update state log for this pokemon
-			state.PokemonActions[attackingPokemonName] = bestAction
-			state.PokemonBuffs[attackingPokemonName] = attackingPokemon.GetBuffs(d.elapsedTime)
+			state.PokemonActions[attackingPokemonName] = PokemonActionResult{
+				ActionName:       attackResult.AttackName,
+				BaseDamage:       baseDamageDealt,
+				CritDamage:       critDamageDealt,
+				AdditionalDamage: additionalDamageDealt,
+				OvertimeDamage:   overtimeDamageDealt,
+				ExecutionDamage:  executionDamageDealt,
+				TotalDamageDealt: totalDamageDealt,
+			}
+
+			// Need to make a copy of the buffs because the returned values are pointers
+			pokemonBuffs := attackingPokemon.GetBuffs()
+			pokemonBuffsCopy := make(map[string]stats.Buff)
+			for pokemonName, buff := range pokemonBuffs {
+				pokemonBuffsCopy[pokemonName] = buff
+			}
+			state.PokemonBuffs[attackingPokemonName] = pokemonBuffsCopy
+
+			// Need to make a copy of the additional damage because the returned values are pointers
+			pokemonAllAdditionalDamage := attackingPokemon.GetAllAdditionalDamage()
+
+			allAdditionalDamage := make(map[string]attack.AdditionalDamage)
+			for additionalDamageName, additionalDamage := range pokemonAllAdditionalDamage {
+				allAdditionalDamage[additionalDamageName] = additionalDamage
+			}
+			state.PokemonAdditionalDamage[attackingPokemonName] = allAdditionalDamage
 
 			// Set delay for next action for the attacking pokemon
 			d.setActionDelay(attackingPokemonName, attackResult, d.elapsedTime)
 			d.pokemonPrevAction[attackingPokemonName] = attackResult.AttackOption
 		}
 
+		// Set copy of overtime damage at this elapsed time
+		pokemonOvertimeDamage := make(map[string][]attack.OverTimeDamage)
+		for pokemonName, overtimeDamage := range d.overtimeDamageByPokemon {
+			pokemonOvertimeDamage[pokemonName] = overtimeDamage
+		}
+		state.OvertimeDamage = pokemonOvertimeDamage
+
 		// Add entry to StateLog
 		state.PokemonTeamBuffs = d.attackingPokemonTeamBuff
 		state.InflictedDebuffs = d.inflictedDebuffs
-		state.OvertimeDamage = d.overtimeDamageByPokemon
 		state.EnemyHealth = d.enemyPokemon.GetRemainingHealth()
-		stateLog[d.elapsedTime] = state
+		stateLog[strconv.FormatFloat(d.elapsedTime, 'f', -1, 64)] = state
 	}
 
 	// Return result
 	return Result{
 		StateLog:  stateLog,
-		TotalTime: d.elapsedTime,
+		TotalTime: d.elapsedTime - startingRipTime,
 	}, nil
+
+	return Result{}, nil
 }
 
 // setActionDelay sets the delay for the next action for the attacking pokemon
@@ -198,7 +288,7 @@ func (d *DamageCalculator) setActionDelay(attackingPokemonName string, attackRes
 	// If attack duration is not available, determine the delay based on the attack option
 	var actionDelay float64
 	if attackOption == attack.BasicAttackOption {
-		attackingPokemonAttackSpeed := d.attackingPokemon[attackingPokemonName].GetStats(elapsedTime).AttackSpeed
+		attackingPokemonAttackSpeed := d.attackingPokemon[attackingPokemonName].GetStats().AttackSpeed
 		actionDelay = attack.GetDelayForAttackSpeed(attackingPokemonAttackSpeed)
 	} else {
 		// Set delay to 750 second for any skill/unite move
@@ -243,16 +333,16 @@ func determineBestAction(availableAttacks []attack.Option) attack.Option {
 }
 
 // calculateOvertimeDamage calculates the damage dealt by overtime attacks
-func (d *DamageCalculator) calculateOvertimeDamage(pokemonName string, elapsedTime float64) float64 {
-	totalOvertimeDamage := 0.0
+func (d *DamageCalculator) calculateOvertimeDamage(pokemonName string, enemyStats stats.Stats, elapsedTime float64) float64 {
+	totalOvertimeDamageDealt := 0.0
 	allOvertimeDamage := d.overtimeDamageByPokemon[pokemonName]
 	for _, overtimeDamage := range allOvertimeDamage {
 		if shouldApplyOvertimeDamage(overtimeDamage, elapsedTime) {
-			totalOvertimeDamage += overtimeDamage.Damage
+			totalOvertimeDamageDealt += calculateDamageDealt(overtimeDamage.BaseDamage, enemyStats, overtimeDamage.AttackType)
 		}
 	}
 
-	return totalOvertimeDamage
+	return totalOvertimeDamageDealt
 }
 
 // shouldApplyOvertimeDamage checks if the overtime damage should be applied given its damage frequency
@@ -289,7 +379,7 @@ func (d *DamageCalculator) shouldCrit(pokemonName string, attackOption attack.Op
 	}
 
 	// If attack can crit, check if it crits
-	critChance := d.attackingPokemon[pokemonName].GetStats(elapsedTime).CriticalHitChance
+	critChance := d.attackingPokemon[pokemonName].GetStats().CriticalHitChance
 	return rollCrit(critChance)
 }
 
@@ -318,13 +408,13 @@ func (d *DamageCalculator) elapseTime() {
 	d.removeExpiredOvertimeDamage(d.elapsedTime)
 }
 
-// calculateDamageTaken calculates the damage taken by the enemy pokemon
-func calculateDamageTaken(attackDamage float64, enemyStats stats.Stats, attackType attack.Type) float64 {
-	var damageTaken float64
+// calculateDamageDealt calculates the damage taken by the enemy pokemon
+func calculateDamageDealt(attackDamage float64, enemyStats stats.Stats, attackType attack.Type) float64 {
+	var damageDealt float64
 	if attackType == attack.PhysicalAttack {
-		damageTaken = attackDamage * 600 / (600 + enemyStats.Defense)
+		damageDealt = attackDamage * 600 / (600 + enemyStats.Defense)
 	} else {
-		damageTaken = attackDamage * 600 / (600 + enemyStats.SpecialDefense)
+		damageDealt = attackDamage * 600 / (600 + enemyStats.SpecialDefense)
 	}
-	return math.Floor(damageTaken)
+	return math.Floor(damageDealt)
 }

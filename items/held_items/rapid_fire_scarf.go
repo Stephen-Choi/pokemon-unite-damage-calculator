@@ -29,6 +29,10 @@ func NewRapidFireScarf() (scarf *RapidFireScarf, err error) {
 	return
 }
 
+func (item *RapidFireScarf) GetName() string {
+	return "rapid fire scarf"
+}
+
 func (item *RapidFireScarf) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }
@@ -59,7 +63,7 @@ func (item *RapidFireScarf) Activate(originalStats stats.Stats, elapsedTime floa
 
 	// Perform Rapid Fire Scarf effect
 	effect.Buff = stats.Buff{
-		Stats: stats.Stats{
+		StatIncrease: stats.Stats{
 			AttackSpeed: 0.3,
 		},
 		DurationEnd: elapsedTime + item.SpecialEffect.Buff.Duration,

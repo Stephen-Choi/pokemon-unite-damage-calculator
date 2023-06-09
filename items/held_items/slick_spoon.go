@@ -25,6 +25,10 @@ func NewSlickSpoon() (slickSpoon *SlickSpoon, err error) {
 	return
 }
 
+func (item *SlickSpoon) GetName() string {
+	return "slick spoon"
+}
+
 func (item *SlickSpoon) GetStatBoosts(originalStats stats.Stats) stats.Stats {
 	return item.Stats
 }

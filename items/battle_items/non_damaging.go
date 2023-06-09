@@ -8,6 +8,10 @@ func NewNonDamagingItem() *NonDamagingItem {
 	return &NonDamagingItem{}
 }
 
+func (item NonDamagingItem) GetName() string {
+	return "" // do nothing
+}
+
 func (item NonDamagingItem) Activate(originalStats stats.Stats, elapsedTime float64) (onCooldown bool, battleItemEffect BattleItemEffect, err error) {
 	return // do nothing
 }

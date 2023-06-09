@@ -82,21 +82,21 @@ func TestPikachu_Attack(t *testing.T) {
 		// Basic attack 1
 		damage, err := pikachu.Attack(attack.BasicAttackOption, enemy, 0)
 		assert.NoError(t, err)
-		assert.Equal(t, float64(213), damage.DamageDealt)
+		assert.Equal(t, float64(213), damage.BaseDamageDealt)
 		assert.Equal(t, attack.BasicAttackOption, damage.AttackOption)
 		assert.Equal(t, attack.PhysicalAttack, damage.AttackType)
 
 		// Basic attack 2
 		damage, err = pikachu.Attack(attack.BasicAttackOption, enemy, 1000)
 		assert.NoError(t, err)
-		assert.Equal(t, float64(213), damage.DamageDealt)
+		assert.Equal(t, float64(213), damage.BaseDamageDealt)
 		assert.Equal(t, attack.BasicAttackOption, damage.AttackOption)
 		assert.Equal(t, attack.PhysicalAttack, damage.AttackType)
 
 		// Boosted attack
 		damage, err = pikachu.Attack(attack.BasicAttackOption, enemy, 2000)
 		assert.NoError(t, err)
-		assert.Equal(t, 438.84, damage.DamageDealt)
+		assert.Equal(t, 438.84, damage.BaseDamageDealt)
 		assert.Equal(t, attack.BasicAttackOption, damage.AttackOption)
 		assert.Equal(t, attack.SpecialAttack, damage.AttackType)
 	})
@@ -104,7 +104,7 @@ func TestPikachu_Attack(t *testing.T) {
 		// Attack with Electro Ball
 		damage, err := pikachu.Attack(attack.Move1, enemy, 0)
 		assert.NoError(t, err)
-		assert.Equal(t, 1005.88, damage.DamageDealt)
+		assert.Equal(t, 1005.88, damage.BaseDamageDealt)
 		assert.Equal(t, attack.Move1, damage.AttackOption)
 		assert.Equal(t, attack.SpecialAttack, damage.AttackType)
 	})
@@ -112,7 +112,7 @@ func TestPikachu_Attack(t *testing.T) {
 		// Attack with Volt tackle
 		damage, err := pikachu.Attack(attack.Move2, enemy, 0)
 		assert.NoError(t, err)
-		assert.Equal(t, 222.52, damage.DamageDealt)
+		assert.Equal(t, 222.52, damage.BaseDamageDealt)
 		assert.Equal(t, attack.Move2, damage.AttackOption)
 		assert.Equal(t, attack.SpecialAttack, damage.AttackType)
 	})
@@ -120,7 +120,9 @@ func TestPikachu_Attack(t *testing.T) {
 		damage, err := pikachu.Attack(attack.UniteMove, enemy, 0)
 		assert.NoError(t, err)
 		assert.Equal(t, attack.OverTimeDamage{
-			Damage:          774.82,
+			Source:          "thunderstorm",
+			AttackType:      attack.SpecialAttack,
+			BaseDamage:      774.82,
 			DamageFrequency: 750,
 			DurationEnd:     3000,
 		}, damage.OvertimeDamage)

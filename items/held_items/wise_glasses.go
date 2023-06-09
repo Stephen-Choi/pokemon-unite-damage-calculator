@@ -26,6 +26,10 @@ func NewWiseGlasses() (wiseGlasses *WiseGlasses, err error) {
 	return
 }
 
+func (a *WiseGlasses) GetName() string {
+	return "wise glasses"
+}
+
 func (a *WiseGlasses) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	// Wise Glasses increases Special Attack by 7%
 	a.SpecialAttack += originalStats.SpecialAttack * 0.07

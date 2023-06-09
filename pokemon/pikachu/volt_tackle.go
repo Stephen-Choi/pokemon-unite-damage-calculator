@@ -40,6 +40,10 @@ func NewVoltTackle(level int) (move *VoltTackle, err error) {
 	return
 }
 
+func (move *VoltTackle) GetName() string {
+	return "volt tackle"
+}
+
 func (move *VoltTackle) CanCriticallyHit() bool {
 	return false
 }
@@ -58,10 +62,11 @@ func (move *VoltTackle) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 	damage := (0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140) * 5 // Volt tackle hits 5 times
 
 	result = attack.Result{
-		AttackOption:   attack.Move2,
-		AttackType:     attack.SpecialAttack,
-		DamageDealt:    damage,
-		AttackDuration: 1400,
+		AttackOption:    attack.Move2,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damage,
+		AttackDuration:  1400,
 	}
 	move.setLastUsed(elapsedTime)
 	return

@@ -25,6 +25,10 @@ func NewRustedSword() (rustedSword *RustedSword, err error) {
 	return
 }
 
+func (a *RustedSword) GetName() string {
+	return "rusted sword"
+}
+
 func (a *RustedSword) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }

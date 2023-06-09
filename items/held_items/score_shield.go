@@ -25,6 +25,10 @@ func NewScoreShield() (scoreShield *ScoreShield, err error) {
 	return
 }
 
+func (s *ScoreShield) GetName() string {
+	return "score shield"
+}
+
 func (s *ScoreShield) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return s.Stats
 }

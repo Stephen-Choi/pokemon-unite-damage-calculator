@@ -25,6 +25,10 @@ func NewRescueHood() (rescueHood *RescueHood, err error) {
 	return
 }
 
+func (a *RescueHood) GetName() string {
+	return "rescue hood"
+}
+
 func (a *RescueHood) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats) {
 	return a.Stats
 }
