@@ -9,41 +9,41 @@ import (
 )
 
 const (
-	surfCooldown     = 8000.0
-	surfLevelUpgrade = 11
-	surfMinLevel     = 4
+	scaldCooldown     = 5000.0
+	scaldLevelUpgrade = 11
+	scaldMinLevel     = 4
 )
 
-type Surf struct {
+type Scald struct {
 	cooldown   float64
 	isUpgraded bool    // isUpgraded is a boolean which is used to check if the move has been upgraded
 	lastUsed   float64 // lastUsed is a time in milliseconds which is used to check if the move is on cooldown
 	used       bool    // used is a boolean which is used to check if the move has ever been used
 }
 
-func NewSurf(level int) (move *Surf, err error) {
+func NewScald(level int) (move *Scald, err error) {
 	// Ensure moveset is valid for the current pokemon level
-	if level < surfMinLevel {
+	if level < scaldMinLevel {
 		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 
-	move = &Surf{
-		cooldown:   surfCooldown,
-		isUpgraded: level >= surfLevelUpgrade,
+	move = &Scald{
+		cooldown:   scaldCooldown,
+		isUpgraded: level >= scaldLevelUpgrade,
 	}
 	return
 }
 
-func (move *Surf) GetName() string {
-	return "surf"
+func (move *Scald) GetName() string {
+	return "scald"
 }
 
-func (move *Surf) CanCriticallyHit() bool {
+func (move *Scald) CanCriticallyHit() bool {
 	return false
 }
 
-func (move *Surf) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
+func (move *Scald) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
 	if !move.used {
 		return true
 	}
@@ -53,22 +53,26 @@ func (move *Surf) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) boo
 	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
-func (move *Surf) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	damage := 1.03*originalStats.SpecialAttack + 6.0*float64(originalStats.Level-1) + 210.0
+func (move *Scald) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
+	maxNumHits := 3.0
+	maxNumburns := 5.0
+	damagePerHit := 1.0*originalStats.SpecialAttack + 7*float64(originalStats.Level-1) + 160
+	damagePerBurn := 0.2*originalStats.SpecialAttack + 1*float64(originalStats.Level-1) + 32
+	totalDamage := damagePerHit*maxNumHits + damagePerBurn*maxNumburns
 
 	result = attack.Result{
 		AttackOption:    attack.Move1,
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
-		BaseDamageDealt: damage,
-		NumberOfHits:    3,
+		BaseDamageDealt: totalDamage,
+		NumberOfHits:    maxNumHits,
 	}
 	move.setLastUsed(elapsedTime)
 	return
 }
 
 // setLastUsed sets the lastUsed time to now
-func (move *Surf) setLastUsed(elapsedTime float64) {
+func (move *Scald) setLastUsed(elapsedTime float64) {
 	move.lastUsed = elapsedTime
 	move.used = true
 }

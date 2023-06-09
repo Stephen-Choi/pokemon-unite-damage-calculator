@@ -78,6 +78,7 @@ func (move *VoltTackle) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 			DurationStart:           elapsedTime,
 			DurationEnd:             elapsedTime + moveDuration,
 		},
+		NumberOfHits: numVoltTackleHits,
 	}
 	move.setLastUsed(elapsedTime)
 	return

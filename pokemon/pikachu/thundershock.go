@@ -59,6 +59,7 @@ func (move *ThunderShock) Activate(stats stats.Stats, enemyPokemon enemy.Pokemon
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
 		BaseDamageDealt: damage,
+		NumberOfHits:    1,
 	}
 	move.setLastUsed(elapsedTime)
 	return

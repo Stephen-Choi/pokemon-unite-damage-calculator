@@ -12,7 +12,7 @@ func NewPassive() (passive *Passive) {
 	return
 }
 
-func (p *Passive) IsAvailable(elapsedTime float64) bool {
+func (p *Passive) ShouldActivate(attackResult attack.Result, elapsedTime float64) bool {
 	return false
 }
 

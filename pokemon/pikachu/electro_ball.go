@@ -73,6 +73,7 @@ func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.
 			Percent:      executionPercent,
 			CappedDamage: 1200,
 		},
+		NumberOfHits: 1,
 	}
 	move.setLastUsed(elapsedTime)
 	return

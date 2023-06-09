@@ -83,6 +83,7 @@ func NewSlowbro(level int, move1Name string, move2Name string, heldItems []heldi
 			Move1:               move1,
 			Move2:               move2,
 			UniteMove:           NewSlowbeam(level),
+			Passive:             NewPassive(),
 			HeldItems:           heldItems,
 			BattleItem:          battleItem,
 			Buffs:               stats.NewBuffs(),

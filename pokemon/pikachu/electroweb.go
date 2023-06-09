@@ -58,6 +58,7 @@ func (move *Electroweb) Activate(originalStats stats.Stats, enemyPokemon enemy.P
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
 		BaseDamageDealt: damage,
+		NumberOfHits:    1,
 	}
 	move.setLastUsed(elapsedTime)
 	return

@@ -49,8 +49,6 @@ func (item *EnergyAmplifier) Activate(originalStats stats.Stats, elapsedTime flo
 		return // early return, don't trigger cooldown
 	}
 
-	fmt.Println("EnergyAmplifier.Activate: activated")
-
 	// Perform energy amplifier effect
 	effect.AdditionalDamage = attack.AdditionalDamage{
 		Type:        attack.PercentDamageBoost,

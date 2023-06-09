@@ -61,6 +61,7 @@ func (move *WaterGun) Activate(originalStats stats.Stats, enemyPokemon enemy.Pok
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
 		BaseDamageDealt: damage,
+		NumberOfHits:    1,
 	}
 	move.setLastUsed(elapsedTime)
 	return

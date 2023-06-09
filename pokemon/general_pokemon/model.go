@@ -153,7 +153,7 @@ func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.P
 	}
 
 	// Apply passive effects if available
-	if p.Passive.IsAvailable(elapsedTime) {
+	if p.Passive.ShouldActivate(attackResult, elapsedTime) {
 		passiveResult, err := p.Passive.Activate(statsBeforeAttack, attackResult, elapsedTime)
 		if err != nil {
 			return finalResult, err
