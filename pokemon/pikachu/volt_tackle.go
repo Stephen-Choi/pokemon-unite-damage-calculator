@@ -59,14 +59,25 @@ func (move *VoltTackle) IsAvailable(pokemonStats stats.Stats, elapsedTime float6
 }
 
 func (move *VoltTackle) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	damage := (0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140) * 5 // Volt tackle hits 5 times
+	damagePerHit := 0.14*originalStats.SpecialAttack + 3*float64(originalStats.Level-1) + 140
+	numVoltTackleHits := 5.0
 
+	moveDuration := 1400.0
 	result = attack.Result{
 		AttackOption:    attack.Move2,
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
-		BaseDamageDealt: damage,
-		AttackDuration:  1400,
+		BaseDamageDealt: damagePerHit, // Deal damage for this first hit
+		AttackDuration:  1400,         // Volt tackle takes 1.4 seconds to complete and other attacks cannot be performed
+		OvertimeDamage: attack.OverTimeDamage{
+			Source:                  move.GetName(),
+			AttackType:              attack.SpecialAttack,
+			BaseDamage:              damagePerHit,
+			LastInflictedDamageTime: elapsedTime,
+			DamageFrequency:         moveDuration / numVoltTackleHits,
+			DurationStart:           elapsedTime,
+			DurationEnd:             elapsedTime + moveDuration,
+		},
 	}
 	move.setLastUsed(elapsedTime)
 	return

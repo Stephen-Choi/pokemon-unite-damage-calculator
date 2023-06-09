@@ -37,7 +37,7 @@ func (a *SpecialAttackSpecs) GetStatBoosts(originalStats stats.Stats) (updatedSt
 	return a.Stats
 }
 
-func (a *SpecialAttackSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *SpecialAttackSpecs) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

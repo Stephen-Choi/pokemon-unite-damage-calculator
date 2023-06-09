@@ -88,7 +88,7 @@ type HeldItemEffect struct {
 type HeldItem interface {
 	GetName() string
 	GetStatBoosts(originalStats stats.Stats) (updatedStats stats.Stats)
-	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error)
+	Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error)
 }
 
 // HeldItemSpecialEffect contains details about a special effect that a held item provides

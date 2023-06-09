@@ -71,16 +71,18 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 	}
 
 	result = attack.Result{
-		AttackOption: attack.Move1,
-		AttackName:   move.GetName(),
-		AttackType:   attack.SpecialAttack,
+		AttackOption:    attack.Move1,
+		AttackName:      move.GetName(),
+		AttackType:      attack.SpecialAttack,
+		BaseDamageDealt: damagePerHit, // Deal damage for this first hit
 		OvertimeDamage: attack.OverTimeDamage{
-			Source:          move.GetName(),
-			AttackType:      attack.SpecialAttack,
-			BaseDamage:      damagePerHit,
-			DamageFrequency: damageFrequency,
-			DurationStart:   elapsedTime,
-			DurationEnd:     elapsedTime + moveDuration,
+			Source:                  move.GetName(),
+			AttackType:              attack.SpecialAttack,
+			BaseDamage:              damagePerHit,
+			LastInflictedDamageTime: elapsedTime,
+			DamageFrequency:         damageFrequency,
+			DurationStart:           elapsedTime,
+			DurationEnd:             elapsedTime + moveDuration,
 		},
 	}
 	move.setLastUsed(elapsedTime)

@@ -33,7 +33,7 @@ func (a *BuddyBarrier) GetStatBoosts(originalStats stats.Stats) (updatedStats st
 	return a.Stats
 }
 
-func (a *BuddyBarrier) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *BuddyBarrier) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

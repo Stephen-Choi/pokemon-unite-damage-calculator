@@ -95,7 +95,7 @@ func (p *GeneralPokemon) activateHeldItems(statsBeforeAttack stats.Stats, attack
 
 	// Default to the attack result, build on top of it
 	for _, heldItem := range p.HeldItems {
-		_, heldItemEffect, err := heldItem.Activate(statsBeforeAttack, elapsedTime, attackOption, attackType)
+		_, heldItemEffect, err := heldItem.Activate(statsBeforeAttack, elapsedTime, attackOption, attackType, attackResult.BaseDamageDealt)
 		if err != nil {
 			return nil, err
 		}

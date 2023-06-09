@@ -139,6 +139,9 @@ func (d *DamageCalculator) CalculateRip() (Result, error) {
 
 			// Check if the pokemon can act
 			if !d.canPokemonAct(attackingPokemonName, availableAttacks) {
+
+				// TODO BUG FIX:
+				// OVERTIME DAMAGE NEEDS TO OCCUR EVEN IF POKEMON IS IN ANIMATION
 				state.PokemonActions[attackingPokemonName] = PokemonActionResult{ActionName: CannotAct}
 
 				// TODO REFACTOR THIS (BEING USED IN 3 PLACES)
@@ -336,9 +339,10 @@ func determineBestAction(availableAttacks []attack.Option) attack.Option {
 func (d *DamageCalculator) calculateOvertimeDamage(pokemonName string, enemyStats stats.Stats, elapsedTime float64) float64 {
 	totalOvertimeDamageDealt := 0.0
 	allOvertimeDamage := d.overtimeDamageByPokemon[pokemonName]
-	for _, overtimeDamage := range allOvertimeDamage {
+	for index, overtimeDamage := range allOvertimeDamage {
 		if shouldApplyOvertimeDamage(overtimeDamage, elapsedTime) {
 			totalOvertimeDamageDealt += calculateDamageDealt(overtimeDamage.BaseDamage, enemyStats, overtimeDamage.AttackType)
+			d.overtimeDamageByPokemon[pokemonName][index].LastInflictedDamageTime = elapsedTime
 		}
 	}
 
@@ -347,7 +351,12 @@ func (d *DamageCalculator) calculateOvertimeDamage(pokemonName string, enemyStat
 
 // shouldApplyOvertimeDamage checks if the overtime damage should be applied given its damage frequency
 func shouldApplyOvertimeDamage(overtimeDamage attack.OverTimeDamage, elapsedTime float64) bool {
-	return math.Mod(elapsedTime-overtimeDamage.DurationStart, overtimeDamage.DamageFrequency) == 0
+	// Return true if no damage has been inflicted yet
+	if overtimeDamage.LastInflictedDamageTime == 0 {
+		return true
+	}
+
+	return overtimeDamage.LastInflictedDamageTime+overtimeDamage.DamageFrequency <= elapsedTime
 }
 
 // removeExpiredOvertimeDamage removes overtime damage that have expired

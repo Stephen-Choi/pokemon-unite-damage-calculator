@@ -33,7 +33,7 @@ func (a *ExpShare) GetStatBoosts(originalStats stats.Stats) (updatedStats stats.
 	return a.Stats
 }
 
-func (a *ExpShare) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *ExpShare) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

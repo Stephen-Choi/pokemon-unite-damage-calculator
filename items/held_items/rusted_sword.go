@@ -33,7 +33,7 @@ func (a *RustedSword) GetStatBoosts(originalStats stats.Stats) (updatedStats sta
 	return a.Stats
 }
 
-func (a *RustedSword) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type) (onCooldown bool, effect HeldItemEffect, err error) {
+func (a *RustedSword) Activate(originalStats stats.Stats, elapsedTime float64, attackOption attack.Option, attackType attack.Type, attackDamage float64) (onCooldown bool, effect HeldItemEffect, err error) {
 	// Not damage related, simple return
 	return
 }

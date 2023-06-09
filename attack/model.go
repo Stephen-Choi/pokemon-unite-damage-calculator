@@ -88,11 +88,6 @@ func (a AllAdditionalDamage) Add(additionalDamageName string, additionalDamage A
 
 // Calculate calculates the total additional damage
 func (a AllAdditionalDamage) Calculate(baseAttackDamage float64, enemyStats stats.Stats) float64 {
-	// BaseDamage must occur for additional damage boosts to be applied
-	if baseAttackDamage == 0.0 {
-		return 0.0
-	}
-
 	totalAdditionalDamage := 0.0
 	for _, additionalDamage := range a {
 		switch additionalDamage.Type {
@@ -123,7 +118,7 @@ func (a AllAdditionalDamage) clearSingleInstanceAppliedAdditionalDamage() {
 
 func (a AllAdditionalDamage) clearExpiredDurationAdditionalDamage(elapsedTime float64) {
 	for additionalDamageName, additionalDamage := range a {
-		if additionalDamage.DurationEnd != nil && *additionalDamage.DurationEnd < elapsedTime {
+		if additionalDamage.DurationEnd != nil && *additionalDamage.DurationEnd <= elapsedTime {
 			delete(a, additionalDamageName)
 		}
 	}
@@ -136,12 +131,13 @@ func (a AllAdditionalDamage) ClearCompletedAdditionalDamageEffects(elapsedTime f
 }
 
 type OverTimeDamage struct {
-	Source          string  `json:"source"`
-	AttackType      Type    `json:"attack-type"`
-	BaseDamage      float64 `json:"base-damage"`
-	DamageFrequency float64 `json:"damage-frequency"` // time in milliseconds to apply the damage
-	DurationStart   float64 `json:"duration-start"`   // time in milliseconds when the overtime damage should start
-	DurationEnd     float64 `json:"duration-end"`     // time in milliseconds when the overtime damage should end
+	Source                  string  `json:"source"`
+	AttackType              Type    `json:"attack-type"`
+	BaseDamage              float64 `json:"base-damage"`
+	LastInflictedDamageTime float64 `json:"last-inflicted-damage-time"`
+	DamageFrequency         float64 `json:"damage-frequency"` // time in milliseconds to apply the damage
+	DurationStart           float64 `json:"duration-start"`   // time in milliseconds when the overtime damage should start
+	DurationEnd             float64 `json:"duration-end"`     // time in milliseconds when the overtime damage should end
 }
 
 func (o OverTimeDamage) Exists() bool {
