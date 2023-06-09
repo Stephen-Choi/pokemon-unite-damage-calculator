@@ -1,0 +1,4 @@
+type Passive interface {
+	IsAvailable(elapsedTime float64) bool
+	Activate(pokemonStats stats.Stats, elapsedTime float64) (result Result, err error)
+}
