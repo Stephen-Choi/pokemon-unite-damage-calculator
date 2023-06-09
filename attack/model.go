@@ -63,9 +63,10 @@ const (
 	SingleInstance                                    AdditionalDamageType = "singleInstance"                                    // SingleInstance is a single instance of additional damage
 	PercentDamageBoost                                AdditionalDamageType = "percentDamageBoost"                                // PercentDamageBoost is a damage boost (as a percent increase) that lasts for a certain amount of time
 	RemainingEnemyHp                                  AdditionalDamageType = "remainingEnemyHp"                                  // RemainingEnemyHp is additional damage that scales with the enemy's remaining HP
-	DefenderAndSupporterDamageBoostAgainstWildPokemon AdditionalDamageType = "defenderAndSupporterDamageBoostAgainstWildPokemon" // DefenderAndSupporterDamageBoost is a damage boost that applies to defenders and supporters on the team against wild pokemon
+	DefenderAndSupporterDamageBoostAgainstWildPokemon AdditionalDamageType = "defenderAndSupporterDamageBoostAgainstWildPokemon" // DefenderAndSupporterDamageBoostAgainstWildPokemon is a damage boost that applies to defenders and supporters on the team against wild pokemon
 )
 
+// GetDefenderAndSupporterWildDamageBoost returns a damage boost for defenders and supporters against wild pokemon that lasts for the entire duration of a match
 func GetDefenderAndSupporterWildDamageBoost(level int) AdditionalDamage {
 	var damagePercentBoost float64
 	if level >= 9 {
