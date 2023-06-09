@@ -35,6 +35,7 @@ type DebuffEffect string
 
 const (
 	IgnoreDefenseForAttackingPokemon DebuffEffect = "ignoreDefense"
+	DecreaseSpecialDefense           DebuffEffect = "decreaseSpecialDefense"
 )
 
 type DebuffType string
@@ -182,6 +183,7 @@ type Result struct {
 	AttackName             string
 	BaseDamageDealt        float64
 	AdditionalDamageDealt  float64
+	NumberOfHits           float64
 	OvertimeDamage         OverTimeDamage
 	AdditionalDamageEffect AdditionalDamage
 	Buff                   stats.Buff
@@ -210,6 +212,11 @@ type SkillMove interface {
 	CanCriticallyHit() bool
 	IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool                                                // Check if the skill move is on cooldown
 	Activate(pokemonStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result Result, err error) // Activate the skill move
+}
+
+type Passive interface {
+	ShouldActivate(attackResult Result, elapsedTime float64) bool
+	Activate(pokemonStats stats.Stats, attackResult Result, elapsedTime float64) (result Result, err error)
 }
 
 // GetDelayForAttackSpeed returns the time delay to wait before attacking (for basic attack) again based on a pokemon's attack speed

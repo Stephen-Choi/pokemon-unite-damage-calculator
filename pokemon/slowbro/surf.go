@@ -1,4 +1,4 @@
-package pikachu
+package slowbro
 
 import (
 	"errors"
@@ -9,41 +9,41 @@ import (
 )
 
 const (
-	electroBallCooldown     = 5000.0
-	electroBallLevelUpgrade = 11
-	electroBallMinLevel     = 4
+	surfCooldown     = 8000.0
+	surfLevelUpgrade = 11
+	surfMinLevel     = 4
 )
 
-type ElectroBall struct {
+type Surf struct {
 	cooldown   float64
 	isUpgraded bool    // isUpgraded is a boolean which is used to check if the move has been upgraded
 	lastUsed   float64 // lastUsed is a time in milliseconds which is used to check if the move is on cooldown
 	used       bool    // used is a boolean which is used to check if the move has ever been used
 }
 
-func NewElectroBall(level int) (move *ElectroBall, err error) {
+func NewSurf(level int) (move *Surf, err error) {
 	// Ensure moveset is valid for the current pokemon level
-	if level < electroBallMinLevel {
+	if level < surfMinLevel {
 		err = errors.New(pokemonErrors.ErrInvalidMovesetForLevel)
 		return
 	}
 
-	move = &ElectroBall{
-		cooldown:   electroBallCooldown,
-		isUpgraded: level >= electroBallLevelUpgrade,
+	move = &Surf{
+		cooldown:   surfCooldown,
+		isUpgraded: level >= surfLevelUpgrade,
 	}
 	return
 }
 
-func (move *ElectroBall) GetName() string {
-	return "electro ball"
+func (move *Surf) GetName() string {
+	return "surf"
 }
 
-func (move *ElectroBall) CanCriticallyHit() bool {
+func (move *Surf) CanCriticallyHit() bool {
 	return false
 }
 
-func (move *ElectroBall) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
+func (move *Surf) IsAvailable(pokemonStats stats.Stats, elapsedTime float64) bool {
 	if !move.used {
 		return true
 	}
@@ -53,34 +53,22 @@ func (move *ElectroBall) IsAvailable(pokemonStats stats.Stats, elapsedTime float
 	return move.lastUsed+updatedCooldown <= elapsedTime
 }
 
-func (move *ElectroBall) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
-	var damage float64
-	var executionPercent float64
-	if !move.isUpgraded {
-		damage = 0.66*originalStats.SpecialAttack + 25*float64(originalStats.Level-1) + 530
-		executionPercent = 0.04
-	} else {
-		damage = 0.77*originalStats.SpecialAttack + 29*float64(originalStats.Level-1) + 640
-		executionPercent = 0.05
-	}
+func (move *Surf) Activate(originalStats stats.Stats, enemyPokemon enemy.Pokemon, elapsedTime float64) (result attack.Result, err error) {
+	damage := 1.03*originalStats.SpecialAttack + 6.0*float64(originalStats.Level-1) + 210.0
 
 	result = attack.Result{
 		AttackOption:    attack.Move1,
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
 		BaseDamageDealt: damage,
-		ExecutionPercentDamage: attack.ExecutePercentDamage{
-			Percent:      executionPercent,
-			CappedDamage: 1200,
-		},
-		NumberOfHits: 1,
+		NumberOfHits:    3,
 	}
 	move.setLastUsed(elapsedTime)
 	return
 }
 
 // setLastUsed sets the lastUsed time to now
-func (move *ElectroBall) setLastUsed(elapsedTime float64) {
+func (move *Surf) setLastUsed(elapsedTime float64) {
 	move.lastUsed = elapsedTime
 	move.used = true
 }

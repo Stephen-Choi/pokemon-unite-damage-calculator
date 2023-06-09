@@ -66,6 +66,7 @@ func (move *Thunderbolt) Activate(originalStats stats.Stats, enemyPokemon enemy.
 		AttackName:      move.GetName(),
 		AttackType:      attack.SpecialAttack,
 		BaseDamageDealt: damage,
+		NumberOfHits:    1,
 	}
 	move.setLastUsed(elapsedTime)
 	return

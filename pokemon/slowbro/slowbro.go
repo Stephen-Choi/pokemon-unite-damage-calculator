@@ -1,50 +1,49 @@
-package pikachu
+package slowbro
 
 import (
 	"errors"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/attack"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/datafetcher"
 	battleitems "github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/battle_items"
-	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
+	helditems "github.com/Stephen-Choi/pokemon-unite-damage-calculator/items/held_items"
 	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/pokemon/general_pokemon"
-	stats "github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
+	"github.com/Stephen-Choi/pokemon-unite-damage-calculator/stats"
 )
 
 const (
-	PikachuName = "pikachu"
+	SlowbroName = "slowbro"
 )
 
 type MoveName string
 
 const (
-	ThunderShockName MoveName = "thunder-shock"
-	ElectroBallName  MoveName = "electro-ball"
-	ThunderName      MoveName = "thunder"
-	ElectrowebName   MoveName = "electroweb"
-	VoltTackleName   MoveName = "volt-tackle"
-	ThunderboltName  MoveName = "thunderbolt"
+	WaterGunName    MoveName = "water-gun"
+	ScaldName       MoveName = "scald"
+	SurfName        MoveName = "surf"
+	SlackOffName    MoveName = "slack-off"
+	AmnesiaName     MoveName = "amnesia"
+	TelekinesisName MoveName = "telekinesis"
 )
 
 var move1Set = []MoveName{
-	ThunderShockName,
-	ElectroBallName,
-	ThunderName,
+	WaterGunName,
+	ScaldName,
+	SurfName,
 }
 
 var move2Set = []MoveName{
-	ElectrowebName,
-	VoltTackleName,
-	ThunderboltName,
+	SlackOffName,
+	AmnesiaName,
+	TelekinesisName,
 }
 
-// Pikachu is a pokemon
-type Pikachu struct {
+type Slowbro struct {
 	general_pokemon.GeneralPokemon
 }
 
-func NewPikachu(level int, move1Name string, move2Name string, heldItems []helditems.HeldItem, battleItem battleitems.BattleItem, emblems *stats.Stats) (p *Pikachu, err error) {
+func NewSlowbro(level int, move1Name string, move2Name string, heldItems []helditems.HeldItem, battleItem battleitems.BattleItem, emblems *stats.Stats) (p *Slowbro, err error) {
 	// Get pokemon stats
-	pokemonStats, err := datafetcher.FetchPokemonStats(PikachuName, level)
+	pokemonStats, err := datafetcher.FetchPokemonStats(SlowbroName, level)
 	if err != nil {
 		return
 	}
@@ -76,14 +75,14 @@ func NewPikachu(level int, move1Name string, move2Name string, heldItems []heldi
 		return
 	}
 
-	p = &Pikachu{
+	p = &Slowbro{
 		general_pokemon.GeneralPokemon{
-			Name:                PikachuName,
+			Name:                SlowbroName,
 			Stats:               pokemonStats,
 			BasicAttack:         NewBasicAttack(),
 			Move1:               move1,
 			Move2:               move2,
-			UniteMove:           NewThunderstorm(level),
+			UniteMove:           NewSlowbeam(level),
 			Passive:             NewPassive(),
 			HeldItems:           heldItems,
 			BattleItem:          battleItem,
@@ -119,18 +118,18 @@ func getMove(moveName string, level int) (move attack.SkillMove, err error) {
 	typedMoveName := MoveName(moveName)
 
 	switch typedMoveName {
-	case ThunderShockName:
-		move, err = NewThunderShock(level)
-	case ElectroBallName:
-		move, err = NewElectroBall(level)
-	case ThunderName:
-		move, err = NewThunder(level)
-	case ElectrowebName:
-		move, err = NewElectroweb(level)
-	case VoltTackleName:
-		move, err = NewVoltTackle(level)
-	case ThunderboltName:
-		move, err = NewThunderbolt(level)
+	case WaterGunName:
+		move, err = NewWaterGun(level)
+	case ScaldName:
+		move, err = NewScald(level)
+	case SurfName:
+		move, err = NewSurf(level)
+	case SlackOffName:
+		move, err = NewSlackOff(level)
+	case AmnesiaName:
+		move, err = NewAmnesia(level)
+	case TelekinesisName:
+		move, err = NewTelekinesis(level)
 	default:
 		err = errors.New("invalid move name")
 	}

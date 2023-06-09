@@ -57,7 +57,7 @@ func (s *State) setPokemonTeamBuffs(teamBuffs stats.Buffs) {
 
 // setInflictedDebuffs deep copies inflicted debuffs into the state
 func (s *State) setInflictedDebuffs(inflictedDebuffs []attack.Debuff) {
-	inflictedDebuffsCopy := make([]attack.Debuff, len(inflictedDebuffs))
+	inflictedDebuffsCopy := []attack.Debuff{}
 	for _, debuff := range inflictedDebuffs {
 		inflictedDebuffsCopy = append(inflictedDebuffsCopy, debuff)
 	}

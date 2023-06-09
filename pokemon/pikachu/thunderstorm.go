@@ -62,8 +62,8 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 
 	// Overtime damage calculation
 	moveDuration := 3000.0
-	numThunderStrikes := 4
-	damageFrequency := moveDuration / float64(numThunderStrikes)
+	numThunderStrikes := 4.0
+	damageFrequency := moveDuration / numThunderStrikes
 
 	uniteBuffDuration := 6000.0
 
@@ -86,6 +86,7 @@ func (move *Thunderstorm) Activate(originalStats stats.Stats, enemyPokemon enemy
 			},
 			BuffType: stats.PercentIncrease,
 		},
+		NumberOfHits: numThunderStrikes,
 	}
 	move.setLastUsed(elapsedTime)
 	return

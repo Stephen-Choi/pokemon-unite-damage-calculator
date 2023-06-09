@@ -61,12 +61,13 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 
 	// Overtime damage calculation
 	var damageFrequency float64
+	var numThunderStrikes float64
 	moveDuration := 2500.0
 	if !move.isUpgraded {
-		numThunderStrikes := 5.0
+		numThunderStrikes = 5.0
 		damageFrequency = moveDuration / numThunderStrikes
 	} else {
-		numThunderStrikes := 7.0
+		numThunderStrikes = 7.0
 		damageFrequency = moveDuration / numThunderStrikes
 	}
 
@@ -84,6 +85,7 @@ func (move *Thunder) Activate(originalStats stats.Stats, enemyPokemon enemy.Poke
 			DurationStart:           elapsedTime,
 			DurationEnd:             elapsedTime + moveDuration,
 		},
+		NumberOfHits: numThunderStrikes,
 	}
 	move.setLastUsed(elapsedTime)
 	return

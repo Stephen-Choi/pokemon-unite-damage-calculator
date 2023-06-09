@@ -19,6 +19,7 @@ type GeneralPokemon struct {
 	Move1       attack.SkillMove
 	Move2       attack.SkillMove
 	UniteMove   attack.SkillMove
+	Passive     attack.Passive
 	HeldItems   []helditems.HeldItem
 	BattleItem  battleitems.BattleItem
 }
@@ -149,6 +150,23 @@ func (p *GeneralPokemon) Attack(attackOption attack.Option, enemyPokemon enemy.P
 	// Add additional damage
 	if attackResult.AdditionalDamageEffect.Exists() {
 		p.addAdditionalDamage(attackOption, attackResult.AdditionalDamageEffect)
+	}
+
+	// Apply passive effects if available
+	if p.Passive.ShouldActivate(attackResult, elapsedTime) {
+		passiveResult, err := p.Passive.Activate(statsBeforeAttack, attackResult, elapsedTime)
+		if err != nil {
+			return finalResult, err
+		}
+		if passiveResult.Buff.Exists() {
+			p.addBuff(attackOption, passiveResult.Buff)
+		}
+		if passiveResult.AdditionalDamageEffect.Exists() {
+			p.addAdditionalDamage(attackOption, passiveResult.AdditionalDamageEffect)
+		}
+		for _, debuff := range passiveResult.Debuffs {
+			attackResult.Debuffs = append(attackResult.Debuffs, debuff)
+		}
 	}
 
 	// Apply held item effects
